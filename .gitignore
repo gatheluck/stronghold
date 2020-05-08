@@ -1,0 +1,8 @@
+__pycache__
+.pytest_cache
+.vscode
+.DS_Store
+data/*
+logs
+**/lightning_logs
+**/mlruns
