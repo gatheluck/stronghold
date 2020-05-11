@@ -11,12 +11,14 @@ import torchvision
 import pytorch_lightning
 
 from submodules.DatasetBuilder.dataset_builder import DatasetBuilder
+from submodules.ModelBuilder.model_builder import ModelBuilder
 
 
 class LitModel(pytorch_lightning.LightningModule):
     def __init__(self, cfg):
         super().__init__()
         self.dataset_builder = DatasetBuilder(root_path=os.path.join(hydra.utils.get_original_cwd(), '../data'), **cfg.dataset)
+        # self.model = ModelBuilder(num_classes=cfg.dataset.num_class, pretrained=False)[]
 
     def forward(self, x):
         return 0
