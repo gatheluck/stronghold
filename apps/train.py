@@ -6,6 +6,7 @@ sys.path.append(base)
 
 import hydra
 import omegaconf
+import itertools
 import torch
 import torchvision
 import pytorch_lightning
@@ -30,6 +31,23 @@ def parse_args(required_keys: set, input_args: dict) -> dict:
             parsed_args[k] = input_args[k]
 
     return parsed_args
+
+
+def get_epoch_end_log(outputs: list) -> dict:
+    """
+    form of outputs is List[Dict[str, Tensor]] or List[List[Dict[str, Tensor]]]
+    """
+    log = dict()
+
+    # if list is nested, flatten them.
+    if type(outputs[0]) is list:
+        outputs = [x for x in itertools.chain(*outputs)]
+
+    for key in outputs[0].keys():
+        val = torch.stack([x[key] for x in outputs]).mean().cpu().item()
+        log[key] = val
+
+    return log
 
 
 class LitModel(pytorch_lightning.LightningModule):
@@ -92,6 +110,12 @@ class LitModel(pytorch_lightning.LightningModule):
         loss = torch.nn.functional.cross_entropy(y_predict, y)
         self.logger.log_metrics(dict(loss=loss.detach().cpu().item()))
         return dict(loss=loss)
+
+    def training_epoch_end(self, outputs):
+        log_dict = get_epoch_end_log(outputs)
+        log_dict['step'] = self.current_epoch
+
+        return {'log': log_dict}
 
 
 @hydra.main(config_path='../conf/train.yaml')
