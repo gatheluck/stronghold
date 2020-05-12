@@ -18,7 +18,8 @@ class LitModel(pytorch_lightning.LightningModule):
     def __init__(self, cfg):
         super().__init__()
         self.dataset_builder = DatasetBuilder(root_path=os.path.join(hydra.utils.get_original_cwd(), '../data'), **cfg.dataset)
-        # self.model = ModelBuilder(num_classes=cfg.dataset.num_class, pretrained=False)[]
+        self.model = ModelBuilder(num_classes=cfg.dataset.num_classes, pretrained=False)[cfg.arch]
+        print(self.model)
 
     def forward(self, x):
         return 0
@@ -34,8 +35,8 @@ def main(cfg: omegaconf.DictConfig) -> None:
     )
     trainer = pytorch_lightning.trainer.Trainer(
         gpus=1,
-        max_epochs=cfg.train.epochs,
-        min_epochs=cfg.train.epochs,
+        max_epochs=cfg.epochs,
+        min_epochs=cfg.epochs,
         logger=logger,
         default_save_path='.',
         weights_save_path='.'
