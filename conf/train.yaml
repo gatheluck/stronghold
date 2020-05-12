@@ -1,8 +1,6 @@
 defaults:
+  - misc
   - dataset: cifar10
-
-train:
-  epochs: 90
 
 hydra:
   run:
