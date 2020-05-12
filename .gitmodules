@@ -1,9 +1,6 @@
 [submodule "submodules/DatasetBuilder"]
 	path = submodules/DatasetBuilder
 	url = https://github.com/gatheluck/DatasetBuilder.git
-[submodule "submodules/ModelBuiler"]
-	path = submodules/ModelBuiler
-	url = https://github.com/gatheluck/ModelBuilder.git
 [submodule "submodules/ModelBuilder"]
 	path = submodules/ModelBuilder
 	url = https://github.com/gatheluck/ModelBuilder.git
