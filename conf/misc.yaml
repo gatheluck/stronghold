@@ -1,0 +1,2 @@
+arch: resnet50
+epochs: 90
