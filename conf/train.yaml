@@ -1,6 +1,7 @@
 defaults:
   - misc
   - dataset: cifar10
+  - optimizer: sgd
 
 hydra:
   run:
