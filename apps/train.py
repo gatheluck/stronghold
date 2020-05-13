@@ -35,6 +35,7 @@ def parse_args(required_keys: set, input_args: dict) -> dict:
 
 def get_epoch_end_log(outputs: list) -> dict:
     """
+    this function fill the gap between single theread and data.parallel.
     form of outputs is List[Dict[str, Tensor]] or List[List[Dict[str, Tensor]]]
     """
     log = dict()
@@ -43,9 +44,15 @@ def get_epoch_end_log(outputs: list) -> dict:
     if type(outputs[0]) is list:
         outputs = [x for x in itertools.chain(*outputs)]
 
-    for key in outputs[0].keys():
-        val = torch.stack([x[key] for x in outputs]).mean().cpu().item()
-        log[key] = val
+    if 'log' in outputs[0].keys():
+        print(outputs[0]['log'].keys())
+        for key in outputs[0]['log'].keys():
+            val = torch.stack([x['log'][key] for x in outputs]).mean().cpu().item()
+            log[key + '_avg'] = val
+    else:
+        for key in outputs[0].keys():
+            val = torch.stack([x[key] for x in outputs]).mean().cpu().item()
+            log[key + '_avg'] = val
 
     return log
 
@@ -61,12 +68,13 @@ class LitModel(pytorch_lightning.LightningModule):
             print('{}:{}'.format(k, v))
             setattr(self, k, v)
 
-        # build
+        # build dataset and model
         self.dataset_builder = DatasetBuilder(root_path=os.path.join(hydra.utils.get_original_cwd(), '../data'), **cfg.dataset)
         self.model = ModelBuilder(num_classes=cfg.dataset.num_classes, pretrained=False)[self.arch]
 
         # variables
         self.train_dataset = None
+        self.val_dataset = None
         self.normalize = self.normalize
         self.dataset_root = os.path.join(hydra.utils.get_original_cwd(), '../data')
         self.log_path = '.'  # hydra automatically change the log place. for detail, please check 'conf/train.yaml'.
@@ -108,13 +116,28 @@ class LitModel(pytorch_lightning.LightningModule):
         x, y = batch
         y_predict = self.forward(x)
         loss = torch.nn.functional.cross_entropy(y_predict, y)
-        self.logger.log_metrics(dict(loss=loss.detach().cpu().item()))
-        return dict(loss=loss)
+        # self.logger.log_metrics(dict(train_loss=loss.detach().cpu().item()))
+        log = {'train_loss': loss}
+        return {'loss': loss, 'log': log}
 
     def training_epoch_end(self, outputs):
         log_dict = get_epoch_end_log(outputs)
         log_dict['step'] = self.current_epoch
+        return {'log': log_dict}
 
+    def val_dataloader(self):
+        return torch.utils.data.DataLoader(dataset=self.val_dataset, batch_size=self.batch_size, shuffle=False)
+
+    def validation_step(self, batch, batch_idx):
+        x, y = batch
+        y_predict = self.forward(x)
+        loss = torch.nn.functional.cross_entropy(y_predict, y)
+        # self.logger.log_metrics(dict(val_loss=loss.detach().cpu().item()))
+        return {'val_loss': loss}
+
+    def validation_epoch_end(self, outputs):
+        log_dict = get_epoch_end_log(outputs)
+        log_dict['step'] = self.current_epoch
         return {'log': log_dict}
 
 
