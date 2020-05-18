@@ -11,6 +11,8 @@ import torch
 import torchvision
 import pytorch_lightning
 
+from libs.metric import accuracy
+
 from submodules.DatasetBuilder.dataset_builder import DatasetBuilder
 from submodules.ModelBuilder.model_builder import ModelBuilder
 
@@ -116,8 +118,11 @@ class LitModel(pytorch_lightning.LightningModule):
         x, y = batch
         y_predict = self.forward(x)
         loss = torch.nn.functional.cross_entropy(y_predict, y)
-        # self.logger.log_metrics(dict(train_loss=loss.detach().cpu().item()))
-        log = {'train_loss': loss}
+        stdacc1, stdacc5 = accuracy(y_predict, y, topk=(1, 5))
+
+        log = {'train_loss': loss,
+               'train_std_acc1': stdacc1,
+               'train_std_acc5': stdacc5}
         return {'loss': loss, 'log': log}
 
     def training_epoch_end(self, outputs):
@@ -132,8 +137,12 @@ class LitModel(pytorch_lightning.LightningModule):
         x, y = batch
         y_predict = self.forward(x)
         loss = torch.nn.functional.cross_entropy(y_predict, y)
-        # self.logger.log_metrics(dict(val_loss=loss.detach().cpu().item()))
-        return {'val_loss': loss}
+        stdacc1, stdacc5 = accuracy(y_predict, y, topk=(1, 5))
+
+        log = {'val_loss': loss,
+               'val_std_acc1': stdacc1,
+               'val_std_acc5': stdacc5}
+        return log
 
     def validation_epoch_end(self, outputs):
         log_dict = get_epoch_end_log(outputs)
