@@ -159,6 +159,8 @@ def main(cfg: omegaconf.DictConfig) -> None:
         tags=None
     )
     trainer = pytorch_lightning.trainer.Trainer(
+        deterministic=False,  # set True when you need reproductivity.
+        benchmark=True,  # this will accerarate training.
         gpus=1,
         max_epochs=cfg.epochs,
         min_epochs=cfg.epochs,
