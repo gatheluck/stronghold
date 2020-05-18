@@ -158,6 +158,18 @@ def main(cfg: omegaconf.DictConfig) -> None:
         experiment_name='mlflow_output',
         tags=None
     )
+
+    # this function is called when saving checkpoint
+    checkpoint_callback = pytorch_lightning.callbacks.ModelCheckpoint(
+        filepath=os.path.join(os.getcwd(), 'checkpoint', '{epoch}-{val_loss_avg:.2f}'),
+        monitor='val_loss_avg',
+        save_top_k=1,
+        verbose=True,
+        mode='min',
+        save_weights_only=True,
+        prefix=cfg.prefix
+    )
+
     trainer = pytorch_lightning.trainer.Trainer(
         deterministic=False,  # set True when you need reproductivity.
         benchmark=True,  # this will accerarate training.
@@ -165,6 +177,7 @@ def main(cfg: omegaconf.DictConfig) -> None:
         max_epochs=cfg.epochs,
         min_epochs=cfg.epochs,
         logger=logger,
+        checkpoint_callback=checkpoint_callback,
         default_save_path='.',
         weights_save_path='.'
     )
