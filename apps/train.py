@@ -12,6 +12,7 @@ import torchvision
 import pytorch_lightning
 
 from libs.metric import accuracy
+from libs.io import save_model
 
 from submodules.DatasetBuilder.dataset_builder import DatasetBuilder
 from submodules.ModelBuilder.model_builder import ModelBuilder
@@ -182,8 +183,10 @@ def main(cfg: omegaconf.DictConfig) -> None:
         weights_save_path='.'
     )
 
-    model = LitModel(cfg)
-    trainer.fit(model)
+    litmodel = LitModel(cfg)
+    # train
+    trainer.fit(litmodel)
+    save_model(litmodel.model, os.path.join(os.getcwd(), 'checkpoint', 'model_weight_final.pth'))
 
 
 if __name__ == '__main__':
