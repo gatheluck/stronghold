@@ -109,6 +109,7 @@ class LitModel(pytorch_lightning.LightningModule):
         # val_optional_transform = torchvision.transforms.Compose([])
         self.val_dataset = self.dataset_builder(train=False, normalize=self.normalize)
 
+    # train related methods
     def train_dataloader(self):
         return torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True)
 
@@ -131,6 +132,7 @@ class LitModel(pytorch_lightning.LightningModule):
         log_dict['step'] = self.current_epoch
         return {'log': log_dict}
 
+    # validation related methods
     def val_dataloader(self):
         return torch.utils.data.DataLoader(dataset=self.val_dataset, batch_size=self.batch_size, shuffle=False)
 
@@ -146,6 +148,27 @@ class LitModel(pytorch_lightning.LightningModule):
         return log
 
     def validation_epoch_end(self, outputs):
+        log_dict = get_epoch_end_log(outputs)
+        log_dict['step'] = self.current_epoch
+        return {'log': log_dict}
+
+    # test related methods
+    def test_dataloader(self):
+        # IMPORTANT: now just same as validataion dataset.
+        return torch.utils.data.DataLoader(dataset=self.val_dataset, batch_size=self.batch_size, shuffle=False)
+
+    def test_step(self, batch, batch_idx):
+        x, y = batch
+        y_predict = self.forward(x)
+        loss = torch.nn.functional.cross_entropy(y_predict, y)
+        stdacc1, stdacc5 = accuracy(y_predict, y, topk=(1, 5))
+
+        log = {'val_loss': loss,
+               'val_std_acc1': stdacc1,
+               'val_std_acc5': stdacc5}
+        return log
+
+    def test_epoch_end(self, outputs):
         log_dict = get_epoch_end_log(outputs)
         log_dict['step'] = self.current_epoch
         return {'log': log_dict}
@@ -187,6 +210,8 @@ def main(cfg: omegaconf.DictConfig) -> None:
     # train
     trainer.fit(litmodel)
     save_model(litmodel.model, os.path.join(os.getcwd(), 'checkpoint', 'model_weight_final.pth'))
+    # test
+    trainer.test()
 
 
 if __name__ == '__main__':
