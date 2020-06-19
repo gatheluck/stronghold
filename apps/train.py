@@ -4,6 +4,7 @@ import sys
 base = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../')
 sys.path.append(base)
 
+import copy
 import hydra
 import omegaconf
 import itertools
@@ -82,6 +83,7 @@ class LitModel(pytorch_lightning.LightningModule):
         self.dataset_root = os.path.join(hydra.utils.get_original_cwd(), '../data')
         self.log_path = '.'  # hydra automatically change the log place. for detail, please check 'conf/train.yaml'.
         self.cfg_optimizer = cfg.optimizer
+        self.cfg_scheduler = cfg.scheduler
 
         # initialize dir
         os.makedirs(self.dataset_root, exist_ok=True)
@@ -90,14 +92,27 @@ class LitModel(pytorch_lightning.LightningModule):
         return self.model(x)
 
     def configure_optimizers(self):
+        # optimizer part
         optimizer_name = self.cfg_optimizer.pop('name')
-
         if optimizer_name == 'sgd':
             optimizer_class = torch.optim.SGD
         else:
             raise ValueError
 
-        return optimizer_class(self.model.parameters(), **self.cfg_optimizer)
+        optimizer = optimizer_class(self.model.parameters(), **self.cfg_optimizer)
+
+        # scheduler part
+        scheduler_name = self.cfg_scheduler.pop('name')
+        if scheduler_name == 'steplr':
+            scheduler_class = torch.optim.lr_scheduler.StepLR
+        elif scheduler_name == 'multisteplr':
+            scheduler_class = torch.optim.lr_scheduler.MultiStepLR
+        else:
+            raise ValueError
+
+        scheduler = scheduler_class(optimizer, **self.cfg_scheduler)
+
+        return [optimizer], [scheduler]
 
     def prepare_data(self):
         """
@@ -176,12 +191,21 @@ class LitModel(pytorch_lightning.LightningModule):
 
 @hydra.main(config_path='../conf/train.yaml')
 def main(cfg: omegaconf.DictConfig) -> None:
-    print(cfg)
+    print(cfg.pretty())
 
     logger = pytorch_lightning.loggers.mlflow.MLFlowLogger(
         experiment_name='mlflow_output',
         tags=None
     )
+
+    # log hyperparams
+    _cfg = copy.deepcopy(cfg)
+    for key, val in cfg.items():
+        if type(val) is omegaconf.dictconfig.DictConfig:
+            dict_for_log = {'.'.join([key, k]): v for k, v in val.items()}  # because cfg is nested dict, the nest info is added to keys.
+            logger.log_hyperparams(dict_for_log)
+            _cfg.pop(key)
+    logger.log_hyperparams(dict(_cfg))
 
     # this function is called when saving checkpoint
     checkpoint_callback = pytorch_lightning.callbacks.ModelCheckpoint(
