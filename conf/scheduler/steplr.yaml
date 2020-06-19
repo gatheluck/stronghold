@@ -1,0 +1,4 @@
+schduler:
+  name: steplr
+  step_size: 30
+  gammma: 0.1
