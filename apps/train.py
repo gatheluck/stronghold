@@ -39,7 +39,7 @@ def main(cfg: omegaconf.DictConfig) -> None:
         save_top_k=1,
         verbose=True,
         mode='min',
-        save_weights_only=True,
+        save_weights_only=False,
         prefix=cfg.prefix
     )
 
