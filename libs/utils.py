@@ -50,3 +50,26 @@ def get_epoch_end_log(outputs: list) -> dict:
             log[key + '_avg'] = val
 
     return log
+
+
+def freeze_params(model, unfreeze_param_names: list):
+    """
+    freeze params which are not inculuded in unfreeze_params.
+    """
+    for k, v in model.named_parameters():
+        if k not in unfreeze_param_names:
+            v.requires_grad = False
+
+    return model
+
+
+if __name__ == '__main__':
+    import torchvision
+
+    model = torchvision.models.resnet50()
+    unfreeze_param_names = 'layer4.2.bn3.weight layer4.2.bn3.bias fc.weight fc.bias'.split()
+
+    model = freeze_params(model, unfreeze_param_names)
+
+    for k, v in model.named_parameters():
+        print('{k}: {requires_grad}'.format(k=k, requires_grad=v.requires_grad))
