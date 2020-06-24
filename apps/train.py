@@ -13,8 +13,10 @@ import pytorch_lightning
 from libs.io import save_model
 from libs.litmodel import LitModel
 
+from submodules.ModelBuilder.model_builder import ModelBuilder
 
-@hydra.main(config_path='../conf/train.yaml')
+
+@hydra.main(config_path='../conf/train.yaml', strict=False)
 def main(cfg: omegaconf.DictConfig) -> None:
     print(cfg.pretty())
 
@@ -55,7 +57,9 @@ def main(cfg: omegaconf.DictConfig) -> None:
         weights_save_path='.'
     )
 
-    litmodel = LitModel(cfg)
+    # build model
+    model = ModelBuilder(num_classes=cfg.dataset.num_classes, pretrained=False)[cfg.arch]
+    litmodel = LitModel(model, cfg)
     # train
     trainer.fit(litmodel)
     save_model(litmodel.model, os.path.join(os.getcwd(), 'checkpoint', 'model_weight_final.pth'))  # manual backup of final model weight.
