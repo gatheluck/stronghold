@@ -13,6 +13,7 @@ import pytorch_lightning
 
 from libs.metric import accuracy
 from libs.io import save_model
+from libs.io import load_model
 from libs.utils import parse_args
 from libs.utils import get_epoch_end_log
 
@@ -21,19 +22,23 @@ from submodules.ModelBuilder.model_builder import ModelBuilder
 
 
 class LitModel(pytorch_lightning.LightningModule):
-    def __init__(self, cfg):
+    def __init__(self, model, cfg):
+        """
+        Args
+        - 
+        """
         super().__init__()
 
         # parse misc options
         required_keys = set('arch normalize batch_size epochs'.split())
-        _parsed_args = parse_args(required_keys, cfg)
+        _parsed_args = parse_args(required_keys, cfg, strict=False)
         for k, v in _parsed_args.items():
-            print('{}:{}'.format(k, v))
-            setattr(self, k, v)
+            if k in required_keys:
+                setattr(self, k, v)
 
         # build dataset and model
         self.dataset_builder = DatasetBuilder(root_path=os.path.join(hydra.utils.get_original_cwd(), '../data'), **cfg.dataset)
-        self.model = ModelBuilder(num_classes=cfg.dataset.num_classes, pretrained=False)[self.arch]
+        self.model = model
 
         # variables
         self.train_dataset = None
