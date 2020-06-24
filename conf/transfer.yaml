@@ -1,0 +1,10 @@
+defaults:
+  - misc_transfer
+  - dataset: cifar10
+  - optimizer: sgd
+  - scheduler: multisteplr
+  - transfer: resnet50
+
+hydra:
+  run:
+    dir: ../logs/${hydra.job.name}/${now:%Y-%m-%d_%H-%M-%S}

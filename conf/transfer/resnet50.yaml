@@ -1,0 +1,3 @@
+transfer:
+  name: resnet50
+  trainable_param_names: [layer4.2.bn3.weight, layer4.2.bn3.bias, fc.weight, fc.bias]
