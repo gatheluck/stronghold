@@ -15,6 +15,10 @@ cd logs/train/[OUTPUT_DIR]
 mlflow ui 
 ```
 
+## Transfer
+If you want to do transfer learning 
+
+
 ## Test
 
 Example code:
