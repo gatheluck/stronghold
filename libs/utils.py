@@ -8,7 +8,7 @@ import itertools
 import torch
 
 
-def parse_args(required_keys: set, input_args: dict) -> dict:
+def parse_args(required_keys: set, input_args: dict, strict: bool = True) -> dict:
     """
     check if all required_keys are inculuded in input_args.
     return parsed_args only inculudes required keys.
@@ -16,6 +16,7 @@ def parse_args(required_keys: set, input_args: dict) -> dict:
     Args
     - required_keys (set) : set of required keys for input_args
     - input_args (dict)   : dict of input arugments
+    - strict (bool)       : if True, parsed_args only includes keys in required_keys
     """
     parsed_args = dict()
 
@@ -25,7 +26,17 @@ def parse_args(required_keys: set, input_args: dict) -> dict:
         else:
             parsed_args[k] = input_args[k]
 
+    # if not strict add additional keys.
+    if not strict:
+        parsed_args.update(input_args)
+
     return parsed_args
+
+
+def check_required_keys(required_keys: set, input_args: dict) -> None:
+    for k in required_keys():
+        if k not in input_args.keys():
+            raise ValueError('initial args are invalid.')
 
 
 def get_epoch_end_log(outputs: list) -> dict:
@@ -60,7 +71,22 @@ def freeze_params(model, unfreeze_param_names: list):
         if k not in unfreeze_param_names:
             v.requires_grad = False
 
-    return model
+
+def replace_final_fc(name, model, num_classes):
+    """
+    Args
+    - name: name of model
+    - model: model itself
+    - num_classes: number of class of new fc
+    """
+    if name == 'alexnet' or name.startswith('vgg'):
+        num_features = model.classifier[6].in_features
+        model.classifier[6] = torch.nn.Linear(num_features, num_classes)
+    elif name.startswith('resnet'):
+        num_features = model.fc.in_features
+        model.fc = torch.nn.Linear(num_features, num_classes)
+    else:
+        raise NotImplementedError
 
 
 if __name__ == '__main__':
@@ -69,7 +95,7 @@ if __name__ == '__main__':
     model = torchvision.models.resnet50()
     unfreeze_param_names = 'layer4.2.bn3.weight layer4.2.bn3.bias fc.weight fc.bias'.split()
 
-    model = freeze_params(model, unfreeze_param_names)
+    freeze_params(model, unfreeze_param_names)
 
     for k, v in model.named_parameters():
         print('{k}: {requires_grad}'.format(k=k, requires_grad=v.requires_grad))
