@@ -15,18 +15,24 @@ cd logs/train/[OUTPUT_DIR]
 mlflow ui 
 ```
 
-## Transfer
-If you want to do transfer learning 
-
-| source | target | batch size | ep  | optim | lr | mom | decay | schduler | step | gamma | ref
+Hyperparam samples:
+| dataset | batch size | ep  | optim | lr | mom | decay | schduler | step | gamma | ref
 ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----
-| ImagNet | CIFAR | 128  | 50 | SGD | 0.01 | 0.9 | 0.0001 | step | 30 | 0.1 | https://openreview.net/pdf?id=ryebG04YvB
+| CIFAR-10 | 32 | 200 | SGD | 0.1 | 0.9 | 0.0001 | multistep | 100,150 | 0.1 | https://arxiv.org/abs/1908.08016
+| ImageNet | 256 | 90 | SGD | 0.1 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | https://arxiv.org/abs/1908.08016
+
+## Transfer
 
 Example code:
 ```
 cd apps
 python transfer.py weight=[PATH_TO_WEIGHT_OR_CHEKPOINT] original_num_classes=22 
 ```
+
+Hyperparam samples:
+| source | target | batch size | ep  | optim | lr | mom | decay | schduler | step | gamma | ref
+---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----
+| ImagNet | CIFAR | 128  | 50 | SGD | 0.01 | 0.9 | 0.0001 | step | 30 | 0.1 | https://openreview.net/pdf?id=ryebG04YvB
 
 ## Test
 
@@ -40,16 +46,16 @@ By default, .ckpt file is saved under `logs/train/yyyy-mm-dd_tt-mm-ss/checkpoint
 
 ## Note
 ### Train
-| dataset | model | batch size | ep  |  loss | train acc | val acc | optim | lr | mom | decay | schduler | step | gamma
----- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
-| fbdb_l2_basis-0031_cls-0022 | resnet50 | 256 | 90  | 0.1136  | 97.31 | 96.39 | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1
-| fbdb_l2_basis-0031_cls-0022 | resnet56 | 256 | 90  | 0.  | 0 | 0 | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1
+| dataset | model | batch size | ep  |  loss | train acc | val acc | optim | lr | mom | decay | schduler | step | gamma | id
+---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| fbdb_l2_basis-0031_cls-0022 | resnet50 | 256 | 90  | 0.1136  | 97.31 | 96.39 | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-25_16-03-46_fbdb_l2_basis-0031_cls-0022
+| fbdb_l2_basis-0031_cls-0022 | resnet56 | 256 | 90  | 0.04835  | 99.32 | 98.79  | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022
 
 ### Transfer
-| source | target  | model | batch size | ep  | loss | train acc | val acc | batch size | optim | lr | mom | decay | schduler | step | gamma | unfreeze
----- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
-| fbdb_l2_basis-0031_cls-0022 | cifar10  | resnet50 | 256 | 50  | 2.180 | 18.74 | 19.35 | 256 | SGD | 0.01 | 0.9 | 0.0001 | step | 30 | 0.1 | layer4.2.bn3.weight, layer4.2.bn3.bias, fc.weight, fc.bias
-| fbdb_l2_basis-0031_cls-0022 | cifar10  | resnet50 | 256 | 90  | 2.138 | 20.60 | 21.18 | 256 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | layer4.2.bn3.weight, layer4.2.bn3.bias, fc.weight, fc.bias
+| source | target  | model | batch size | ep  | loss | train acc | val acc | batch size | optim | lr | mom | decay | schduler | step | gamma | unfreeze | id
+---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| fbdb_l2_basis-0031_cls-0022 | cifar10  | resnet50 | 256 | 50  | 2.180 | 18.74 | 19.35 | 256 | SGD | 0.01 | 0.9 | 0.0001 | step | 30 | 0.1 | layer4.2.bn3.weight, layer4.2.bn3.bias, fc.weight, fc.bias | 2020-06-25_16-57-11_fbdb_l2_basis-0031_cls-0022_cifar10
+| fbdb_l2_basis-0031_cls-0022 | cifar10  | resnet50 | 256 | 90  | 2.138 | 20.60 | 21.18 | 256 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | layer4.2.bn3.weight, layer4.2.bn3.bias, fc.weight, fc.bias | 2020-06-25_17-22-20_fbdb_l2_basis-0031_cls-0022_cifar10
 
 ### Named Params
 | model | keys |
