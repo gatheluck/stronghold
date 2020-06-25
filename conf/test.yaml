@@ -1,5 +1,5 @@
 defaults:
-  - misc
+  - misc_train
   - dataset: cifar10
   - optimizer: sgd
   - scheduler: multisteplr
