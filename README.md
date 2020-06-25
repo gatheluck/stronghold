@@ -18,6 +18,15 @@ mlflow ui
 ## Transfer
 If you want to do transfer learning 
 
+| source | target | batch size | ep  | optim | lr | mom | decay | schduler | step | gamma | ref
+---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----
+| ImagNet | CIFAR | 128  | 50 | SGD | 0.01 | 0.9 | 0.0001 | step | 30 | 0.1 | https://openreview.net/pdf?id=ryebG04YvB
+
+Example code:
+```
+cd apps
+python transfer.py weight=[PATH_TO_WEIGHT_OR_CHEKPOINT] original_num_classes=22 
+```
 
 ## Test
 
