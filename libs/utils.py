@@ -34,7 +34,7 @@ def parse_args(required_keys: set, input_args: dict, strict: bool = True) -> dic
 
 
 def check_required_keys(required_keys: set, input_args: dict) -> None:
-    for k in required_keys():
+    for k in required_keys:
         if k not in input_args.keys():
             raise ValueError('initial args are invalid.')
 
