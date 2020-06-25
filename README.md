@@ -52,10 +52,14 @@ By default, .ckpt file is saved under `logs/train/yyyy-mm-dd_tt-mm-ss/checkpoint
 | fbdb_l2_basis-0031_cls-0022 | resnet56 | 256 | 90  | 0.04835  | 99.32 | 98.79  | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022
 
 ### Transfer
-| source | target  | model | batch size | ep  | loss | train acc | val acc | batch size | optim | lr | mom | decay | schduler | step | gamma | unfreeze | id
----- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
-| fbdb_l2_basis-0031_cls-0022 | cifar10  | resnet50 | 256 | 50  | 2.180 | 18.74 | 19.35 | 256 | SGD | 0.01 | 0.9 | 0.0001 | step | 30 | 0.1 | layer4.2.bn3.weight, layer4.2.bn3.bias, fc.weight, fc.bias | 2020-06-25_16-57-11_fbdb_l2_basis-0031_cls-0022_cifar10
-| fbdb_l2_basis-0031_cls-0022 | cifar10  | resnet50 | 256 | 90  | 2.138 | 20.60 | 21.18 | 256 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | layer4.2.bn3.weight, layer4.2.bn3.bias, fc.weight, fc.bias | 2020-06-25_17-22-20_fbdb_l2_basis-0031_cls-0022_cifar10
+#### from fbdb_l2_basis-0031_cls-0022
+| source | target  | model | batch size | ep  | loss | train acc | val acc | optim | lr | mom | decay | schduler | step | gamma | unfreeze | id
+---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- 
+| fbdb_l2_basis-0031_cls-0022 | cifar10  | resnet50 | 256 | 50 | 2.180 | 18.74 | 19.35 | SGD | 0.01 | 0.9 | 0.0001 | step | 30 | 0.1 | layer4.2.bn3.weight, layer4.2.bn3.bias, fc.weight, fc.bias | 2020-06-25_16-57-11_fbdb_l2_basis-0031_cls-0022_cifar10
+| fbdb_l2_basis-0031_cls-0022 | cifar10  | resnet50 | 256 | 90 | 2.138 | 20.60 | 21.18 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | layer4.2.bn3.weight, layer4.2.bn3.bias, fc.weight, fc.bias | 2020-06-25_17-22-20_fbdb_l2_basis-0031_cls-0022_cifar10
+| fbdb_l2_basis-0031_cls-0022 | cifar10  | resnet56 | 256 | 90 | 2.155 | 19.50 | 20.70 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | layer4.2.bn3.weight, layer4.2.bn3.bias, fc.weight, fc.bias | 2020-06-25_18-33-57_fbdb_l2_basis-0031_cls-0022_cifar10
+
+
 
 ### Named Params
 | model | keys |
