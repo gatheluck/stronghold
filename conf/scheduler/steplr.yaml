@@ -1,4 +1,4 @@
-schduler:
+scheduler:
   name: steplr
   step_size: 30
-  gammma: 0.1
+  gamma: 0.1

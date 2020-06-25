@@ -2,7 +2,7 @@ defaults:
   - misc_transfer
   - dataset: cifar10
   - optimizer: sgd
-  - scheduler: multisteplr
+  - scheduler: steplr
   - transfer: resnet50
 
 hydra:
