@@ -27,6 +27,9 @@ def main(cfg: omegaconf.DictConfig) -> None:
     check_required_keys(required_keys, cfg)
     print(cfg.pretty())
 
+    # fix weight bacause hydra change the current working dir
+    cfg.weight = os.path.join(hydra.utils.get_original_cwd(), cfg.weight)
+
     logger = pytorch_lightning.loggers.mlflow.MLFlowLogger(
         experiment_name='mlflow_output',
         tags=None
@@ -70,12 +73,12 @@ def main(cfg: omegaconf.DictConfig) -> None:
         print('loading weight from {weight}'.format(weight=cfg.weight))
         load_model(model, cfg.weight)  # load model weight
     replace_final_fc(cfg.arch, model, cfg.dataset.num_classes)  # replace fc
-    freeze_params(model, cfg.transfer.trainable_param_names)  # freeze some params
+    freeze_params(model, cfg.transfer.unfreeze_param_names)  # freeze some params
 
     # build lighting model
     litmodel = LitModel(model, cfg)
 
-    # train
+    # train for transfer
     trainer.fit(litmodel)
     save_model(litmodel.model, os.path.join(os.getcwd(), 'checkpoint', 'model_weight_transfered_final.pth'))  # manual backup of final model weight.
     # test
