@@ -48,3 +48,4 @@ By default, .ckpt file is saved under `logs/train/yyyy-mm-dd_tt-mm-ss/checkpoint
 | source | target  | model | batch size | ep  | loss | train acc | val acc | batch size | optim | lr | mom | decay | schduler | step | gamma | unfreeze
 ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
 | fbdb_l2_basis-0031_cls-0022 | cifar10  | resnet50 | 256 | 50  | 2.180 | 18.74 | 19.35 | 256 | SGD | 0.01 | 0.9 | 0.0001 | step | 30 | 0.1 | layer4.2.bn3.weight, layer4.2.bn3.bias, fc.weight, fc.bias
+| fbdb_l2_basis-0031_cls-0022 | cifar10  | resnet50 | 256 | 90  | 2.138 | 20.60 | 21.18 | 256 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | layer4.2.bn3.weight, layer4.2.bn3.bias, fc.weight, fc.bias
