@@ -59,7 +59,7 @@ By default, .ckpt file is saved under `logs/train/yyyy-mm-dd_tt-mm-ss/checkpoint
 | fbdb_l2_basis-0031_cls-0022 | cifar10  | resnet50 | 256 | 90 | 2.138 | 20.60 | 21.18 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | layer4.2.bn3.weight, layer4.2.bn3.bias, fc.weight, fc.bias | 2020-06-25_17-22-20_fbdb_l2_basis-0031_cls-0022_cifar10
 | fbdb_l2_basis-0031_cls-0022 | cifar10  | resnet56 | 256 | 90 | 2.155 | 19.50 | 20.70 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | layer4.2.bn3.weight, layer4.2.bn3.bias, fc.weight, fc.bias | 2020-06-25_18-33-57_fbdb_l2_basis-0031_cls-0022_cifar10
 
-
+#### from fbdb_full_basis-0031_cls-0961
 
 ### Named Params
 | model | keys |
