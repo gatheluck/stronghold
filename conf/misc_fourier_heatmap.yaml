@@ -1,0 +1,7 @@
+arch: resnet50
+num_workers: 8
+batch_size: 1024
+num_samples: 1024
+h_map_size: 31
+w_map_size: 31
+eps: 16.0
