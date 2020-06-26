@@ -1,3 +1,0 @@
-transfer:
-  name: resnet50
-  unfreeze_param_names: [layer4.2.bn3.weight, layer4.2.bn3.bias, fc.weight, fc.bias]
