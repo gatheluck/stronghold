@@ -77,6 +77,7 @@ python fourier_heatmap.py weight=[PATH_TO_CHECKPOINT]
 | cifar10 | resnet56 | 16(l2) | cifar10 | - | -  | <img src="samples/fourier_heatmap/2020-06-26_12-55-57_cifar10_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-26_12-55-57_cifar10_example_images.png" height="100px"> | 2020-06-26_12-55-57_cifar10
 | fbdb_l2_basis-0031_cls-0022 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | - | -  | <img src="samples/fourier_heatmap/2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022_example_images.png" height="100px"> | 2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022
 | cifar10 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | cifar10 | level1 | <img src="samples/fourier_heatmap/2020-06-27_00-36-24_fbdb_l2_basis-0031_cls-0022_cifar10_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-27_00-36-24_fbdb_l2_basis-0031_cls-0022_cifar10_example_images.png" height="100px"> | 2020-06-27_00-36-24_fbdb_l2_basis-0031_cls-0022_cifar10
+| cifar10 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | cifar10 | level2 | <img src="samples/fourier_heatmap/2020-06-27_02-28-43_fbdb_l2_basis-0031_cls-0022_cifar10_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-27_02-28-43_fbdb_l2_basis-0031_cls-0022_cifar10_example_images.png" height="100px"> | 2020-06-27_02-28-43_fbdb_l2_basis-0031_cls-0022_cifar10
 
 ### Named Params
 | model | keys |
