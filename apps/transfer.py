@@ -16,6 +16,7 @@ from libs.litmodel import LitModel
 from libs.utils import check_required_keys
 from libs.utils import replace_final_fc
 from libs.utils import freeze_params
+from libs.utils import UNFREEZE_PARAMS
 
 from submodules.ModelBuilder.model_builder import ModelBuilder
 
@@ -25,10 +26,12 @@ def main(cfg: omegaconf.DictConfig) -> None:
     # check config
     required_keys = 'weight original_num_classes'.split()
     check_required_keys(required_keys, cfg)
-    print(cfg.pretty())
 
     # fix weight bacause hydra change the current working dir
     cfg.weight = os.path.join(hydra.utils.get_original_cwd(), cfg.weight)
+    cfg.unfreeze_params = UNFREEZE_PARAMS[cfg.arch][cfg.unfreeze_level]
+
+    print(cfg.pretty())  # show config
 
     logger = pytorch_lightning.loggers.mlflow.MLFlowLogger(
         experiment_name='mlflow_output',
@@ -73,7 +76,7 @@ def main(cfg: omegaconf.DictConfig) -> None:
         print('loading weight from {weight}'.format(weight=cfg.weight))
         load_model(model, cfg.weight)  # load model weight
     replace_final_fc(cfg.arch, model, cfg.dataset.num_classes)  # replace fc
-    freeze_params(model, cfg.transfer.unfreeze_param_names)  # freeze some params
+    freeze_params(model, cfg.unfreeze_params)  # freeze some params
 
     # build lighting model
     litmodel = LitModel(model, cfg)
