@@ -3,7 +3,6 @@ defaults:
   - dataset: cifar10
   - optimizer: sgd
   - scheduler: steplr
-  - transfer: resnet50
 
 hydra:
   run:
