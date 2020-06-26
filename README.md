@@ -69,6 +69,12 @@ python fourier_heatmap.py weight=[PATH_TO_CHECKPOINT]
 
 #### from fbdb_full_basis-0031_cls-0961
 
+### Fourier Heat map
+| dataset | model | eps | source train | target train | heatmap | samples  | id
+---- | ---- | ---- | ---- | ---- | ---- | ---- | ----
+| cifar10 | resnet56 | 16(l2) | cifar10 | - | <img src="samples/fourier_heatmap/2020-06-26_12-55-57_cifar10_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-26_12-55-57_cifar10_example_images.png" height="100px"> | 2020-06-26_12-55-57_cifar10
+| fbdb_l2_basis-0031_cls-0022 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | - | <img src="samples/fourier_heatmap/2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022_example_images.png" height="100px"> | 2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022
+
 ### Named Params
 | model | keys |
 ---- | ----
