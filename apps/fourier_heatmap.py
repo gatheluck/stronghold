@@ -4,8 +4,10 @@ import sys
 base = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../')
 sys.path.append(base)
 
+import copy
 import hydra
 import omegaconf
+import pytorch_lightning
 
 from libs.utils import check_required_keys
 from libs.io import load_model
@@ -26,6 +28,20 @@ def main(cfg: omegaconf.DictConfig) -> None:
 
     # fix weight bacause hydra change the current working dir
     cfg.weight = os.path.join(hydra.utils.get_original_cwd(), cfg.weight)
+
+    logger = pytorch_lightning.loggers.mlflow.MLFlowLogger(
+        experiment_name='mlflow_output',
+        tags=None
+    )
+
+    # log hyperparams
+    _cfg = copy.deepcopy(cfg)
+    for key, val in cfg.items():
+        if type(val) is omegaconf.dictconfig.DictConfig:
+            dict_for_log = {'.'.join([key, k]): v for k, v in val.items()}  # because cfg is nested dict, the nest info is added to keys.
+            logger.log_hyperparams(dict_for_log)
+            _cfg.pop(key)
+    logger.log_hyperparams(dict(_cfg))
 
     # build model
     model = ModelBuilder(num_classes=cfg.dataset.num_classes, pretrained=False)[cfg.arch].cuda()
