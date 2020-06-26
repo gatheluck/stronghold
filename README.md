@@ -66,7 +66,8 @@ python fourier_heatmap.py weight=[PATH_TO_CHECKPOINT]
 | fbdb_l2_basis-0031_cls-0022 | CIFAR-10  | resnet50 | 256 | 50 | 2.180 | 18.74 | 19.35 | SGD | 0.01 | 0.9 | 0.0001 | step | 30 | 0.1 | level_0 | 2020-06-25_16-57-11_fbdb_l2_basis-0031_cls-0022_cifar10
 | fbdb_l2_basis-0031_cls-0022 | CIFAR-10  | resnet50 | 256 | 90 | 2.138 | 20.60 | 21.18 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_0 | 2020-06-25_17-22-20_fbdb_l2_basis-0031_cls-0022_cifar10
 | fbdb_l2_basis-0031_cls-0022 | CIFAR-10  | resnet56 | 256 | 90 | 2.155 | 19.50 | 20.70 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_0 | 2020-06-25_18-33-57_fbdb_l2_basis-0031_cls-0022_cifar10
-| fbdb_l2_basis-0031_cls-0022 | CIFAR-10  | resnet56 | 256 | 90 | 1.294 | 53.78 | 57.70  | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_1 | 2020-06-26_21-54-37_fbdb_l2_basis-0031_cls-0022_cifar10 
+| fbdb_l2_basis-0031_cls-0022 | CIFAR-10  | resnet56 | 256 | 90 | 1.294 | 53.78 | 57.70  | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_1 | 2020-06-26_21-54-37_fbdb_l2_basis-0031_cls-0022_cifar10
+| fbdb_l2_basis-0031_cls-0022 | CIFAR-10  | resnet56 | 256 | 90 | 0.9137 | 67.94  | 67.89  | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_2 | 2020-06-27_01-05-44_fbdb_l2_basis-0031_cls-0022_cifar10 
 
 #### from fbdb_full_basis-0031_cls-0961
 
