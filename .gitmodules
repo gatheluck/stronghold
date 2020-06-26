@@ -4,3 +4,6 @@
 [submodule "submodules/ModelBuilder"]
 	path = submodules/ModelBuilder
 	url = https://github.com/gatheluck/ModelBuilder.git
+[submodule "submodules/FourierHeatmap"]
+	path = submodules/FourierHeatmap
+	url = https://github.com/gatheluck/FourierHeatmap.git
