@@ -1,0 +1,3 @@
+online_logger:
+  name: comet
+  activate: Ture
