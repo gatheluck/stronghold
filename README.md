@@ -39,7 +39,7 @@ Hyperparam samples:
 Example code:
 ```
 cd apps
-python test.py ckpt_path=[PATH_TO_CHEKPOINT]
+python test.py weight=[PATH_TO_WEIGHT]
 ```
 By default, .ckpt file is saved under `logs/train/yyyy-mm-dd_tt-mm-ss/checkpoint/epoch=XX-val_loss_avg=X.XX.ckpt`.
 
