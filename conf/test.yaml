@@ -1,5 +1,6 @@
 defaults:
   - misc_train
+  - online_logger: comet
   - dataset: cifar10
   - optimizer: sgd
   - scheduler: multisteplr
@@ -7,3 +8,6 @@ defaults:
 hydra:
   run:
     dir: ../logs/${hydra.job.name}/${now:%Y-%m-%d_%H-%M-%S}
+  sweep:
+    dir: ../logs/${hydra.job.name}/${now:%Y-%m-%d_%H-%M-%S}
+    subdir: ${hydra.job.override_dirname}
