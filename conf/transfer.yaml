@@ -1,5 +1,6 @@
 defaults:
   - misc_transfer
+  - online_logger: comet
   - dataset: cifar10
   - optimizer: sgd
   - scheduler: steplr
