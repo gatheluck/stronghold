@@ -6,11 +6,13 @@ sys.path.append(base)
 
 import copy
 import hydra
+import logging
 import omegaconf
 import torch
 import pytorch_lightning
 
 from libs.io import save_model
+from libs.io import log_hyperparams
 from libs.litmodel import LitModel
 
 from submodules.ModelBuilder.model_builder import ModelBuilder
@@ -18,21 +20,24 @@ from submodules.ModelBuilder.model_builder import ModelBuilder
 
 @hydra.main(config_path='../conf/train.yaml', strict=False)
 def main(cfg: omegaconf.DictConfig) -> None:
-    print(cfg.pretty())
+    hydra_logger = logging.getLogger(__name__)
+    hydra_logger.info(' '.join(sys.argv))
+    hydra_logger.info(cfg.pretty())
 
-    logger = pytorch_lightning.loggers.mlflow.MLFlowLogger(
-        experiment_name='mlflow_output',
-        tags=None
-    )
+    loggers = [
+        pytorch_lightning.loggers.mlflow.MLFlowLogger(
+            experiment_name='mlflow_output',
+            tags=None)
+    ]
+    api_key = os.environ.get('ONLINE_LOGGER_API_KEY')
+    if api_key and cfg.online_logger.activate:
+        loggers.append(
+            pytorch_lightning.loggers.CometLogger(api_key=api_key)
+        )
 
     # log hyperparams
-    _cfg = copy.deepcopy(cfg)
-    for key, val in cfg.items():
-        if type(val) is omegaconf.dictconfig.DictConfig:
-            dict_for_log = {'.'.join([key, k]): v for k, v in val.items()}  # because cfg is nested dict, the nest info is added to keys.
-            logger.log_hyperparams(dict_for_log)
-            _cfg.pop(key)
-    logger.log_hyperparams(dict(_cfg))
+    for logger in loggers:
+        log_hyperparams(logger, cfg)
 
     # this function is called when saving checkpoint
     checkpoint_callback = pytorch_lightning.callbacks.ModelCheckpoint(
@@ -51,7 +56,7 @@ def main(cfg: omegaconf.DictConfig) -> None:
         gpus=cfg.gpus,
         max_epochs=cfg.epochs,
         min_epochs=cfg.epochs,
-        logger=logger,
+        logger=loggers,
         checkpoint_callback=checkpoint_callback,
         default_save_path='.',
         weights_save_path='.'
@@ -60,6 +65,7 @@ def main(cfg: omegaconf.DictConfig) -> None:
     # build model
     model = ModelBuilder(num_classes=cfg.dataset.num_classes, pretrained=False)[cfg.arch]
     litmodel = LitModel(model, cfg)
+
     # train
     trainer.fit(litmodel)
     save_model(litmodel.model, os.path.join(os.getcwd(), 'checkpoint', 'model_weight_final.pth'))  # manual backup of final model weight.

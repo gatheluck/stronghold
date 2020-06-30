@@ -5,6 +5,7 @@ base = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../')
 sys.path.append(base)
 
 import copy
+import logging
 import hydra
 import omegaconf
 import torch
@@ -12,6 +13,7 @@ import pytorch_lightning
 
 from libs.io import save_model
 from libs.io import load_model
+from libs.io import log_hyperparams
 from libs.litmodel import LitModel
 from libs.utils import check_required_keys
 from libs.utils import replace_final_fc
@@ -31,21 +33,24 @@ def main(cfg: omegaconf.DictConfig) -> None:
     cfg.weight = os.path.join(hydra.utils.get_original_cwd(), cfg.weight)
     cfg.unfreeze_params = UNFREEZE_PARAMS[cfg.arch][cfg.unfreeze_level]
 
-    print(cfg.pretty())  # show config
+    hydra_logger = logging.getLogger(__name__)
+    hydra_logger.info(' '.join(sys.argv))
+    hydra_logger.info(cfg.pretty())
 
-    logger = pytorch_lightning.loggers.mlflow.MLFlowLogger(
-        experiment_name='mlflow_output',
-        tags=None
-    )
+    loggers = [
+        pytorch_lightning.loggers.mlflow.MLFlowLogger(
+            experiment_name='mlflow_output',
+            tags=None)
+    ]
+    api_key = os.environ.get('ONLINE_LOGGER_API_KEY')
+    if api_key and cfg.online_logger.activate:
+        loggers.append(
+            pytorch_lightning.loggers.CometLogger(api_key=api_key)
+        )
 
     # log hyperparams
-    _cfg = copy.deepcopy(cfg)
-    for key, val in cfg.items():
-        if type(val) is omegaconf.dictconfig.DictConfig:
-            dict_for_log = {'.'.join([key, k]): v for k, v in val.items()}  # because cfg is nested dict, the nest info is added to keys.
-            logger.log_hyperparams(dict_for_log)
-            _cfg.pop(key)
-    logger.log_hyperparams(dict(_cfg))
+    for logger in loggers:
+        log_hyperparams(logger, cfg)
 
     # this function is called when saving checkpoint
     checkpoint_callback = pytorch_lightning.callbacks.ModelCheckpoint(
@@ -64,7 +69,7 @@ def main(cfg: omegaconf.DictConfig) -> None:
         gpus=cfg.gpus,
         max_epochs=cfg.epochs,
         min_epochs=cfg.epochs,
-        logger=logger,
+        logger=loggers,
         checkpoint_callback=checkpoint_callback,
         default_save_path='.',
         weights_save_path='.'
@@ -73,11 +78,10 @@ def main(cfg: omegaconf.DictConfig) -> None:
     # build model
     model = ModelBuilder(num_classes=cfg.original_num_classes, pretrained=False)[cfg.arch]
     if 'weight' in cfg:
-        print('loading weight from {weight}'.format(weight=cfg.weight))
+        hydra_logger.info('loading weight from {weight}'.format(weight=cfg.weight))
         load_model(model, cfg.weight)  # load model weight
     replace_final_fc(cfg.arch, model, cfg.dataset.num_classes)  # replace fc
     freeze_params(model, cfg.unfreeze_params)  # freeze some params
-
     # build lighting model
     litmodel = LitModel(model, cfg)
 
