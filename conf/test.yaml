@@ -1,9 +1,8 @@
 defaults:
   - misc/misc_test
-  - online_logger: comet
+  - attack: pgd
   - dataset: cifar10
-  - optimizer: sgd
-  - scheduler: multisteplr
+  - online_logger: comet
 
 hydra:
   run:
