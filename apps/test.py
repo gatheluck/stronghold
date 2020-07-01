@@ -23,6 +23,7 @@ from submodules.DatasetBuilder.dataset_builder import DatasetBuilder
 from submodules.AttackBuilder.attack_builder import AttackBuilder
 from submodules.AttackBuilder.attacks.utils import Denormalizer
 from submodules.FourierHeatmap.fhmap.fourier_heatmap import create_fourier_heatmap
+from submodules.CnnSpacialSensitivity.spatial_sensitivity.patch_shuffle import eval_patch_shuffle
 
 
 SUPPORTED_MODE = 'acc fourier spacial'.split()
@@ -100,7 +101,8 @@ def eval_spacial_sensitivity(model, cfg):
     eval spacial sensitivity.
     main algorithm is written in https://github.com/gatheluck/CnnSpacialSensitivity
     """
-    raise NotImplementedError
+    dataset_builder = DatasetBuilder(root_path=os.path.join(hydra.utils.get_original_cwd(), '../data'), **cfg.dataset)
+    eval_patch_shuffle(model, dataset_builder, log_dir='.', **cfg.tester)
 
 
 @hydra.main(config_path='../conf/test.yaml')
@@ -134,7 +136,7 @@ def main(cfg: omegaconf.DictConfig):
     elif cfg.tester.name == 'fourier':
         eval_fourier_heatmap(model, cfg)
     elif cfg.tester.name == 'spacial':
-        raise NotImplementedError
+        eval_spacial_sensitivity(model, cfg)
     else:
         raise NotImplementedError
 
