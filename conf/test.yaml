@@ -1,5 +1,5 @@
 defaults:
-  - misc/misc_train
+  - misc/misc_test
   - online_logger: comet
   - dataset: cifar10
   - optimizer: sgd
