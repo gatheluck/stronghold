@@ -52,8 +52,8 @@ def main(cfg: omegaconf.DictConfig) -> None:
         deterministic=False,  # IMPORTANT: set True when you need reproductivity.
         benchmark=True,  # this will accerarate training.
         gpus=cfg.gpus,
-        max_epochs=cfg.epochs,
-        min_epochs=cfg.epochs,
+        max_epochs=0,
+        min_epochs=0,
         logger=loggers,
         default_save_path='.',
         weights_save_path='.'
