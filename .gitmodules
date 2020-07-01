@@ -10,3 +10,6 @@
 [submodule "submodules/AttackBuilder"]
 	path = submodules/AttackBuilder
 	url = https://github.com/gatheluck/AttackBuilder.git
+[submodule "submodules/CnnSpacialSensitivity"]
+	path = submodules/CnnSpacialSensitivity
+	url = https://github.com/gatheluck/CnnSpacialSensitivity.git
