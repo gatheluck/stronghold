@@ -1,10 +1,15 @@
 defaults:
   - misc/misc_test
+  - tester: acc
   - attack: pgd
   - dataset: cifar10
   - online_logger: comet
 
 hydra:
+  job:
+    config:
+      override_dirname:
+        exclude_keys: ['weight']
   run:
     dir: ../logs/${hydra.job.name}/${now:%Y-%m-%d_%H-%M-%S}
   sweep:
