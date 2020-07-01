@@ -36,19 +36,25 @@ Hyperparam samples:
 
 ## Test
 
-Example code:
-```
-cd apps
-python test.py weight=[PATH_TO_WEIGHT]
-```
-By default, .ckpt file is saved under `logs/train/yyyy-mm-dd_tt-mm-ss/checkpoint/epoch=XX-val_loss_avg=X.XX.ckpt`.
+Currently following types of test are supported.
 
-## Fourier Heat Map
+- acc: evaluate standard and robust accuracy
+- fourier: create Fourier heatmap
+- spacial: evaluate spacial sensitivity by patch shuffle
 
 Example code:
 ```
 cd apps
-python fourier_heatmap.py weight=[PATH_TO_CHECKPOINT]
+python test.py weight=[PATH_TO_WEIGHT] tester=acc
+```
+By default, .pth file is saved under `logs/train/yyyy-mm-dd_tt-mm-ss/checkpoint/epoch=XX-val_loss_avg=X.XX.ckpt`.
+
+If you want to run multiple test at same time. Multi-run option of hydra is useful as follows.
+
+Example code:
+```
+cd apps
+python test.py weight=[PATH_TO_WEIGHT] tester=acc,fourier,spacial -m
 ```
 
 ## Note
@@ -73,7 +79,7 @@ python fourier_heatmap.py weight=[PATH_TO_CHECKPOINT]
 
 #### from fbdb_full_basis-0031_cls-0961
 
-### Fourier Heat map
+### Test
 | dataset | model | eps | source train | target train | unfreeze  | heatmap | samples | id
 ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----
 | cifar10 | resnet56 | 16(l2) | cifar10 | - | -  | <img src="samples/fourier_heatmap/2020-06-26_12-55-57_cifar10_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-26_12-55-57_cifar10_example_images.png" height="100px"> | 2020-06-26_12-55-57_cifar10
