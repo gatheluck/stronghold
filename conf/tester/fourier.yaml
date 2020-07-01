@@ -6,3 +6,4 @@ tester:
   h_map_size: 31
   w_map_size: 31
   eps: 16.0
+  shuffle: False
