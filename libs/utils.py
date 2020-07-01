@@ -4,6 +4,7 @@ import sys
 base = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../')
 sys.path.append(base)
 
+from datetime import datetime
 import itertools
 import torch
 
@@ -109,6 +110,17 @@ def replace_final_fc(name, model, num_classes):
         model.fc = torch.nn.Linear(num_features, num_classes)
     else:
         raise NotImplementedError
+
+
+def get_time_stamp(mode='long'):
+    if mode == 'long':
+        time_stamp = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+    elif mode == 'short':
+        time_stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    else:
+        raise ValueError('mode is invalid value')
+
+    return time_stamp
 
 
 if __name__ == '__main__':
