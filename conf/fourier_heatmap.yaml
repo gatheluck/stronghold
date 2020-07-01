@@ -1,5 +1,5 @@
 defaults:
-  - misc_fourier_heatmap
+  - misc/misc_fourier_heatmap
   - dataset: cifar10
 
 hydra:

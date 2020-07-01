@@ -1,5 +1,5 @@
 defaults:
-  - misc_transfer
+  - misc/misc_transfer
   - online_logger: comet
   - dataset: cifar10
   - optimizer: sgd
