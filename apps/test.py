@@ -22,6 +22,8 @@ from submodules.ModelBuilder.model_builder import ModelBuilder
 from submodules.DatasetBuilder.dataset_builder import DatasetBuilder
 from submodules.AttackBuilder.attack_builder import AttackBuilder
 from submodules.AttackBuilder.attacks.utils import Denormalizer
+from submodules.FourierHeatmap.fhmap.fourier_heatmap import create_fourier_heatmap
+
 
 SUPPORTED_MODE = 'acc fourier spacial'.split()
 # - acc: test standard and robust acc
@@ -84,6 +86,23 @@ def eval_accuracy(model, hydra_logger, cfg):
         hydra_logger.info('{k}: {v}'.format(k=k, v=v))
 
 
+def eval_fourier_heatmap(model, cfg):
+    """
+    create fourier heatmap.
+    main algorithm is written in https://github.com/gatheluck/FourierHeatmap
+    """
+    dataset_builder = DatasetBuilder(root_path=os.path.join(hydra.utils.get_original_cwd(), '../data'), **cfg.dataset)
+    create_fourier_heatmap(model, dataset_builder, log_dir='.', **cfg.tester)
+
+
+def eval_spacial_sensitivity(model, cfg):
+    """
+    eval spacial sensitivity.
+    main algorithm is written in https://github.com/gatheluck/CnnSpacialSensitivity
+    """
+    raise NotImplementedError
+
+
 @hydra.main(config_path='../conf/test.yaml')
 def main(cfg: omegaconf.DictConfig):
     if cfg.mode not in SUPPORTED_MODE:
@@ -110,11 +129,11 @@ def main(cfg: omegaconf.DictConfig):
         raise ValueError('model loading is failed')
 
     # eval
-    if cfg.mode == 'acc':
+    if cfg.tester.name == 'acc':
         eval_accuracy(model, hydra_logger, cfg)
-    elif cfg.mode == 'fourier':
-        raise NotImplementedError
-    elif cfg.mode == 'spacial':
+    elif cfg.tester.name == 'fourier':
+        eval_fourier_heatmap(model, cfg)
+    elif cfg.tester.name == 'spacial':
         raise NotImplementedError
     else:
         raise NotImplementedError
