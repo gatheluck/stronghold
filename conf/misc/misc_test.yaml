@@ -1,0 +1,12 @@
+arch: resnet56
+normalize: True
+batch_size: 1024
+epochs: 90
+gpus: 1
+checkpoint_monitor: val_std_acc1_avg
+checkpoint_mode: max
+prefix: ''
+mode: acc
+device: cuda
+weight: ''
+logger_path: 'local_log.csv'
