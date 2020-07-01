@@ -42,10 +42,10 @@ def main(cfg: omegaconf.DictConfig) -> None:
     # this function is called when saving checkpoint
     checkpoint_callback = pytorch_lightning.callbacks.ModelCheckpoint(
         filepath=os.path.join(os.getcwd(), 'checkpoint', '{epoch}-{val_loss_avg:.2f}'),
-        monitor='val_loss_avg',
+        monitor=cfg.checkpoint_monitor,
         save_top_k=1,
         verbose=True,
-        mode='min',
+        mode=cfg.checkpoint_mode,
         save_weights_only=False,
         prefix=cfg.prefix
     )
@@ -54,6 +54,7 @@ def main(cfg: omegaconf.DictConfig) -> None:
         deterministic=False,  # set True when you need reproductivity.
         benchmark=True,  # this will accerarate training.
         gpus=cfg.gpus,
+        distributed_backend=cfg.distributed_backend,  # check https://pytorch-lightning.readthedocs.io/en/stable/trainer.html#distributed-backend
         max_epochs=cfg.epochs,
         min_epochs=cfg.epochs,
         logger=loggers,
