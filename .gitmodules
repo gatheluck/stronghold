@@ -7,3 +7,6 @@
 [submodule "submodules/FourierHeatmap"]
 	path = submodules/FourierHeatmap
 	url = https://github.com/gatheluck/FourierHeatmap.git
+[submodule "submodules/AttackBuilder"]
+	path = submodules/AttackBuilder
+	url = https://github.com/gatheluck/AttackBuilder.git
