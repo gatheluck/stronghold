@@ -30,8 +30,11 @@ class LitModel(pytorch_lightning.LightningModule):
         """
         super().__init__()
 
+        # this attribute is for saving hyper harams with model weight by pytorch lightning
+        self.hparams = omegaconf.DictConfig.to_container(cfg)  # convert DictConfig to dict. please check following page: https://omegaconf.readthedocs.io/en/latest/usage.html
+
         # parse misc options
-        required_keys = set('arch normalize batch_size epochs'.split())
+        required_keys = set('arch normalize batch_size epochs num_workers'.split())
         _parsed_args = parse_args(required_keys, cfg, strict=False)
         for k, v in _parsed_args.items():
             if k in required_keys:
@@ -99,7 +102,7 @@ class LitModel(pytorch_lightning.LightningModule):
 
     # train related methods
     def train_dataloader(self):
-        return torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True)
+        return torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
     def training_step(self, batch, batch_idx):
         """
@@ -122,7 +125,7 @@ class LitModel(pytorch_lightning.LightningModule):
 
     # validation related methods
     def val_dataloader(self):
-        return torch.utils.data.DataLoader(dataset=self.val_dataset, batch_size=self.batch_size, shuffle=False)
+        return torch.utils.data.DataLoader(dataset=self.val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
@@ -143,7 +146,7 @@ class LitModel(pytorch_lightning.LightningModule):
     # test related methods
     def test_dataloader(self):
         # IMPORTANT: now just same as validataion dataset.
-        return torch.utils.data.DataLoader(dataset=self.val_dataset, batch_size=self.batch_size, shuffle=False)
+        return torch.utils.data.DataLoader(dataset=self.val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
 
     def test_step(self, batch, batch_idx):
         x, y = batch
