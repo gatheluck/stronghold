@@ -1,4 +1,5 @@
 attack:
+  name: pgd
   norm: linf
   eps_max: 8.0
   num_iteration: 7
