@@ -73,11 +73,11 @@ def get_epoch_end_log(outputs: list) -> dict:
     if 'log' in outputs[0].keys():
         print(outputs[0]['log'].keys())
         for key in outputs[0]['log'].keys():
-            val = torch.stack([x['log'][key] for x in outputs]).mean().cpu().item()
+            val = torch.stack([x['log'][key] for x in outputs]).mean().cpu()  # .item()
             log[key + '_avg'] = val
     else:
         for key in outputs[0].keys():
-            val = torch.stack([x[key] for x in outputs]).mean().cpu().item()
+            val = torch.stack([x[key] for x in outputs]).mean().cpu()  # .item()
             log[key + '_avg'] = val
 
     return log
