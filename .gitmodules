@@ -13,3 +13,6 @@
 [submodule "submodules/CnnSpacialSensitivity"]
 	path = submodules/CnnSpacialSensitivity
 	url = https://github.com/gatheluck/CnnSpacialSensitivity.git
+[submodule "submodules/PatchGaussian"]
+	path = submodules/PatchGaussian
+	url = https://github.com/gatheluck/PatchGaussian.git
