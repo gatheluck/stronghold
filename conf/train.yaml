@@ -4,6 +4,7 @@ defaults:
   - dataset: cifar10
   - optimizer: sgd
   - scheduler: multisteplr
+  - augmentation: standard
 
 hydra:
   run:
