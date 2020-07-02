@@ -54,7 +54,7 @@ def main(cfg: omegaconf.DictConfig) -> None:
         deterministic=False,  # set True when you need reproductivity.
         benchmark=True,  # this will accerarate training.
         gpus=cfg.gpus,
-        distributed_backend=cfg.distributed_backend,  # check https://pytorch-lightning.readthedocs.io/en/stable/trainer.html#distributed-backend
+        # distributed_backend=cfg.distributed_backend,  # check https://pytorch-lightning.readthedocs.io/en/stable/trainer.html#distributed-backend
         max_epochs=cfg.epochs,
         min_epochs=cfg.epochs,
         logger=loggers,
