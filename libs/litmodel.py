@@ -19,6 +19,7 @@ from libs.utils import get_epoch_end_log
 
 from submodules.DatasetBuilder.dataset_builder import DatasetBuilder
 from submodules.ModelBuilder.model_builder import ModelBuilder
+from submodules.PatchGaussian.patch_gaussian import AddPatchGaussian
 
 
 class LitModel(pytorch_lightning.LightningModule):
@@ -48,6 +49,7 @@ class LitModel(pytorch_lightning.LightningModule):
         self.log_path = '.'  # hydra automatically change the log place. for detail, please check 'conf/train.yaml'.
         self.cfg_optimizer = cfg.optimizer
         self.cfg_scheduler = cfg.scheduler
+        self.cfg_augmentation = cfg.augmentation
 
         # initialize dir
         os.makedirs(self.dataset_root, exist_ok=True)
@@ -82,8 +84,15 @@ class LitModel(pytorch_lightning.LightningModule):
         """
         download and prepare data. In distributed (GPU, TPU), this will only be called once this is called before requesting the dataloaders.
         """
-        # train_optional_transform = torchvision.transforms.Compose([])
-        self.train_dataset = self.dataset_builder(train=True, normalize=self.normalize)
+
+        if self.cfg_augmentation.name == 'standard':
+            train_optional_transform = []
+        elif self.cfg_augmentation.name == 'patch_gaussian':
+            train_optional_transform = [AddPatchGaussian(**self.cfg_augmentation)]
+        else:
+            raise NotImplementedError
+
+        self.train_dataset = self.dataset_builder(train=True, normalize=self.normalize, optional_transform=train_optional_transform)
 
         # val_optional_transform = torchvision.transforms.Compose([])
         self.val_dataset = self.dataset_builder(train=False, normalize=self.normalize)
