@@ -1,10 +1,12 @@
-arch: resnet50
+arch: resnet56
 normalize: True
 num_workers: 8
-batch_size: 1024
+batch_size: 256
 epochs: 90
 gpus: 1
-distributed_backend: None
+num_nodes: 1
+distributed_backend: null
 checkpoint_monitor: val_std_acc1_avg
 checkpoint_mode: max
+resume_ckpt_path: null
 prefix: ''
