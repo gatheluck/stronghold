@@ -59,11 +59,13 @@ python test.py weight=[PATH_TO_WEIGHT] tester=acc,fourier,spacial -m
 
 ## Note
 ### Train
-| dataset | model | batch size | ep  |  loss | train acc | val acc | optim | lr | mom | decay | schduler | step | gamma | id
----- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
-| CIFAR-10 | resnet56 | 256 | 90 | 0.4557 | 92.88 | 86.23 | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-26_12-55-57_cifar10
-| fbdb_l2_basis-0031_cls-0022 | resnet50 | 256 | 90  | 0.1136  | 97.31 | 96.39 | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-25_16-03-46_fbdb_l2_basis-0031_cls-0022
-| fbdb_l2_basis-0031_cls-0022 | resnet56 | 256 | 90  | 0.04835  | 99.32 | 98.79  | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022
+| dataset | augmentation | model | batch size | ep  |  loss | train acc | val acc | optim | lr | mom | decay | schduler | step | gamma | id
+---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| CIFAR-10 | -  | resnet56 | 256 | 90 | 0.4557 | 92.88 | 86.23 | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-26_12-55-57_cifar10
+| CIFAR-10 | Patch Gaussian | resnet56 | 256 | 90 | 0.4395 | 85.54 | 85.36 | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-26_12-55-57_cifar10_patch_gaussian
+| fbdb_l2_basis-0031_cls-0022 | - | resnet50 | 256 | 90  | 0.1136  | 97.31 | 96.39 | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-25_16-03-46_fbdb_l2_basis-0031_cls-0022
+| fbdb_l2_basis-0031_cls-0022 | - | resnet56 | 256 | 90  | 0.04835  | 99.32 | 98.79  | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022
+| fbdb_l2_basis-0031_cls-0022 | Patch Gaussian | resnet56 | 256 | 90 | 0.0583 | 98.61  | 98.57 | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-07-03_17-01-17_fbdb_l2_basis-0031_cls-0022_patch_gaussian
 
 ### Transfer
 #### from fbdb_l2_basis-0031_cls-0022
@@ -79,14 +81,18 @@ python test.py weight=[PATH_TO_WEIGHT] tester=acc,fourier,spacial -m
 
 #### from fbdb_full_basis-0031_cls-0961
 
+coming soon
+
 ### Test
-| dataset | model | eps | source train | target train | unfreeze  | heatmap | samples | id
----- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----
-| cifar10 | resnet56 | 16(l2) | cifar10 | - | -  | <img src="samples/fourier_heatmap/2020-06-26_12-55-57_cifar10_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-26_12-55-57_cifar10_example_images.png" height="100px"> | 2020-06-26_12-55-57_cifar10
-| fbdb_l2_basis-0031_cls-0022 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | - | -  | <img src="samples/fourier_heatmap/2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022_example_images.png" height="100px"> | 2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022
-| cifar10 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | cifar10 | level1 | <img src="samples/fourier_heatmap/2020-06-27_00-36-24_fbdb_l2_basis-0031_cls-0022_cifar10_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-27_00-36-24_fbdb_l2_basis-0031_cls-0022_cifar10_example_images.png" height="100px"> | 2020-06-27_00-36-24_fbdb_l2_basis-0031_cls-0022_cifar10
-| cifar10 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | cifar10 | level2 | <img src="samples/fourier_heatmap/2020-06-27_02-28-43_fbdb_l2_basis-0031_cls-0022_cifar10_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-27_02-28-43_fbdb_l2_basis-0031_cls-0022_cifar10_example_images.png" height="100px"> | 2020-06-27_02-28-43_fbdb_l2_basis-0031_cls-0022_cifar10
-| cifar10 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | cifar10 | level3 | <img src="samples/fourier_heatmap/2020-06-27_04-01-57_fbdb_l2_basis-0031_cls-0022_cifar10_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-27_04-01-57_fbdb_l2_basis-0031_cls-0022_cifar10_example_images.png" height="100px"> | 2020-06-27_04-01-57_fbdb_l2_basis-0031_cls-0022_cifar10
+| dataset | model | augmentation  | eps | source train | target train | unfreeze  | heatmap | samples | id
+---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----
+| cifar10 | resnet56 | -  | 16(l2) | cifar10 | - | -  | <img src="samples/fourier_heatmap/2020-06-26_12-55-57_cifar10_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-26_12-55-57_cifar10_example_images.png" height="100px"> | 2020-06-26_12-55-57_cifar10
+| cifar10 | resnet56 | patch gaussian | 16(l2) | cifar10 | - | - | - | - | -
+| fbdb_l2_basis-0031_cls-0022 | resnet56 | - | 16(l2) | fbdb_l2_basis-0031_cls-0022 | - | -  | <img src="samples/fourier_heatmap/2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022_example_images.png" height="100px"> | 2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022
+| fbdb_l2_basis-0031_cls-0022 | resnet56 | patch gaussian | 16(l2) | fbdb_l2_basis-0031_cls-0022 | - | - | - | - | - 
+| cifar10 | resnet56 | - | 16(l2) | fbdb_l2_basis-0031_cls-0022 | cifar10 | level1 | <img src="samples/fourier_heatmap/2020-06-27_00-36-24_fbdb_l2_basis-0031_cls-0022_cifar10_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-27_00-36-24_fbdb_l2_basis-0031_cls-0022_cifar10_example_images.png" height="100px"> | 2020-06-27_00-36-24_fbdb_l2_basis-0031_cls-0022_cifar10
+| cifar10 | resnet56 | -  | 16(l2) | fbdb_l2_basis-0031_cls-0022 | cifar10 | level2 | <img src="samples/fourier_heatmap/2020-06-27_02-28-43_fbdb_l2_basis-0031_cls-0022_cifar10_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-27_02-28-43_fbdb_l2_basis-0031_cls-0022_cifar10_example_images.png" height="100px"> | 2020-06-27_02-28-43_fbdb_l2_basis-0031_cls-0022_cifar10
+| cifar10 | resnet56 | -  | 16(l2) | fbdb_l2_basis-0031_cls-0022 | cifar10 | level3 | <img src="samples/fourier_heatmap/2020-06-27_04-01-57_fbdb_l2_basis-0031_cls-0022_cifar10_fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/2020-06-27_04-01-57_fbdb_l2_basis-0031_cls-0022_cifar10_example_images.png" height="100px"> | 2020-06-27_04-01-57_fbdb_l2_basis-0031_cls-0022_cifar10
 
 ### Named Params
 | model | keys |
