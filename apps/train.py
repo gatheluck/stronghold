@@ -40,7 +40,8 @@ def main(cfg: omegaconf.DictConfig) -> None:
 
     # log hyperparams
     for logger in loggers:
-        log_hyperparams(logger, cfg)
+        logger.log_hyperparams(omegaconf.DictConfig.to_container(cfg))
+        # log_hyperparams(logger, cfg)
 
     # this function is called when saving checkpoint
     checkpoint_callback = pytorch_lightning.callbacks.ModelCheckpoint(
