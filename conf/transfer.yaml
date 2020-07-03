@@ -4,10 +4,14 @@ defaults:
   - online_logger: comet
   - dataset: cifar10
   - optimizer: sgd
-  - scheduler: steplr
+  - scheduler: multisteplr
   - augmentation: standard
 
 hydra:
+  job:
+    config:
+      override_dirname:
+        exclude_keys: ['weight']
   run:
     dir: ../logs/${hydra.job.name}/${now:%Y-%m-%d_%H-%M-%S}
   sweep:

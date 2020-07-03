@@ -8,6 +8,10 @@ defaults:
   - augmentation: standard
 
 hydra:
+  job:
+    config:
+      override_dirname:
+        exclude_keys: ['resume_ckpt_path']
   run:
     dir: ../logs/${hydra.job.name}/${now:%Y-%m-%d_%H-%M-%S}
   sweep:
