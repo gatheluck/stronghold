@@ -18,7 +18,7 @@ from submodules.ModelBuilder.model_builder import ModelBuilder
 @hydra.main(config_path='../conf/transfer.yaml')
 def main(cfg: omegaconf.DictConfig) -> None:
     assert cfg.weight, 'please specify [weight] option.'
-    assert (not cfg.unfreeze_params) and (not cfg.unfreeze_level), 'please specify either [unfreeze_params] or [unfreeze_level]'
+    assert (cfg.unfreeze_params is not None) or (cfg.unfreeze_level is not None), 'please specify either [unfreeze_params] or [unfreeze_level]'
 
     # fix relative path because hydra automatically change the current working dirctory.
     if not cfg.weight.startswith('/'):

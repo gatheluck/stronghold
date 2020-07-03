@@ -14,7 +14,7 @@ from submodules.ModelBuilder.model_builder import ModelBuilder
 @hydra.main(config_path='../conf/train.yaml')
 def main(cfg: omegaconf.DictConfig) -> None:
     # fix relative path because hydra automatically change the current working dirctory.
-    if (cfg.resume_ckpt_path) and (not cfg.resume_ckpt_path.startswith('/')):
+    if (cfg.resume_ckpt_path is not None) and (not cfg.resume_ckpt_path.startswith('/')):
         cfg.resume_ckpt_path = os.path.join(hydra.utils.get_original_cwd(), cfg.resume_ckpt_path)
 
     # build model and train
