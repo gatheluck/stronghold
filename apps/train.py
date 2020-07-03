@@ -20,6 +20,9 @@ from submodules.ModelBuilder.model_builder import ModelBuilder
 
 @hydra.main(config_path='../conf/train.yaml', strict=False)
 def main(cfg: omegaconf.DictConfig) -> None:
+    # fix relative path because hydra automatically change the current working dirctory.
+    cfg.resume_ckpt_path = os.path.join(hydra.utils.get_original_cwd(), cfg.resume_ckpt_path) if (cfg.resume_ckpt_path) and (not cfg.resume_ckpt_path.startswith('/')) else cfg.resume_ckpt_path
+
     hydra_logger = logging.getLogger(__name__)
     hydra_logger.info(' '.join(sys.argv))
     hydra_logger.info(cfg.pretty())
@@ -53,14 +56,17 @@ def main(cfg: omegaconf.DictConfig) -> None:
     trainer = pytorch_lightning.trainer.Trainer(
         deterministic=False,  # set True when you need reproductivity.
         benchmark=True,  # this will accerarate training.
+        fast_dev_run=False,  # if it is True, run only one batch for each epoch. it is useful for debuging
         gpus=cfg.gpus,
+        num_nodes=cfg.num_nodes,
         # distributed_backend=cfg.distributed_backend,  # check https://pytorch-lightning.readthedocs.io/en/stable/trainer.html#distributed-backend
         max_epochs=cfg.epochs,
         min_epochs=cfg.epochs,
         logger=loggers,
         checkpoint_callback=checkpoint_callback,
         default_save_path='.',
-        weights_save_path='.'
+        weights_save_path='.',
+        resume_from_checkpoint=cfg.resume_ckpt_path  # if not None, resume from checkpoint
     )
 
     # build model
