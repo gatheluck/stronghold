@@ -26,7 +26,6 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig, outname: 
     - outname: name of output weight file. if specify None or '', model weight is not saved.
     """
     # fix relative path because hydra automatically change the current working dirctory.
-    # if (cfg.resume_ckpt_path) and (not cfg.resume_ckpt_path.startswith('/')):
     if 'resume_ckpt_path' in cfg.keys():
         cfg.resume_ckpt_path = os.path.join(hydra.utils.get_original_cwd(), cfg.resume_ckpt_path) if not cfg.resume_ckpt_path.startswith('/') else cfg.resume_ckpt_path
 
@@ -43,7 +42,6 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig, outname: 
         loggers.append(pytorch_lightning.loggers.CometLogger(api_key=api_key))
     # log hyperparams
     for logger in loggers:
-        # logger.log_hyperparams(omegaconf.DictConfig.to_container(cfg))
         logger.log_hyperparams(omegaconf.OmegaConf.to_container(cfg))
 
     # this callback function is called by lightning when saving checkpoint
