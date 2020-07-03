@@ -55,10 +55,10 @@ def main(cfg: omegaconf.DictConfig) -> None:
     # this function is called when saving checkpoint
     checkpoint_callback = pytorch_lightning.callbacks.ModelCheckpoint(
         filepath=os.path.join(os.getcwd(), 'checkpoint', '{epoch}-{val_loss_avg:.2f}'),
-        monitor='val_loss_avg',
+        monitor=cfg.checkpoint_monitor,
         save_top_k=1,
         verbose=True,
-        mode='min',
+        mode=cfg.checkpoint_mode,
         save_weights_only=False,
         prefix=cfg.prefix
     )
