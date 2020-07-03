@@ -1,4 +1,5 @@
 defaults:
+  - misc/misc_shared
   - misc/misc_train
   - online_logger: comet
   - dataset: cifar10
