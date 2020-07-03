@@ -1,0 +1,5 @@
+arch: resnet56
+normalize: True
+num_workers: 8
+gpus: 1
+prefix: ''
