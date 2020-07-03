@@ -31,7 +31,7 @@ class LitModel(pytorch_lightning.LightningModule):
         super().__init__()
 
         # this attribute is for saving hyper harams with model weight by pytorch lightning
-        self.hparams = omegaconf.DictConfig.to_container(cfg)  # convert DictConfig to dict. please check following page: https://omegaconf.readthedocs.io/en/latest/usage.html
+        self.hparams = omegaconf.OmegaConf.to_container(cfg)  # convert DictConfig to dict. please check following page: https://omegaconf.readthedocs.io/en/latest/usage.html
 
         # parse misc options
         required_keys = set('arch normalize batch_size epochs num_workers'.split())
