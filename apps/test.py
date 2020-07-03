@@ -26,7 +26,7 @@ from submodules.FourierHeatmap.fhmap.fourier_heatmap import create_fourier_heatm
 from submodules.CnnSpacialSensitivity.spatial_sensitivity.patch_shuffle import eval_patch_shuffle
 
 
-SUPPORTED_MODE = 'acc fourier spacial'.split()
+SUPPORTED_TESTER = 'acc fourier spacial'.split()
 # - acc: test standard and robust acc
 # - fourier: generate fourier heatmap
 # - spacial: test spacial sensitity
@@ -107,7 +107,7 @@ def eval_spacial_sensitivity(model, cfg):
 
 @hydra.main(config_path='../conf/test.yaml')
 def main(cfg: omegaconf.DictConfig):
-    if cfg.mode not in SUPPORTED_MODE:
+    if cfg.tester.name not in SUPPORTED_TESTER:
         raise ValueError
 
     # fix weight bacause hydra change the current working dir
