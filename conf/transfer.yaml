@@ -1,9 +1,11 @@
 defaults:
+  - misc/misc_shared
   - misc/misc_transfer
   - online_logger: comet
   - dataset: cifar10
   - optimizer: sgd
   - scheduler: steplr
+  - augmentation: standard
 
 hydra:
   run:
