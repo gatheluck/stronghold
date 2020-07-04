@@ -107,6 +107,7 @@ def eval_spacial_sensitivity(model, cfg):
 
 @hydra.main(config_path='../conf/test.yaml')
 def main(cfg: omegaconf.DictConfig):
+    assert cfg.weight is not None, 'please specify [weight] option'
     if cfg.tester.name not in SUPPORTED_TESTER:
         raise ValueError
 
