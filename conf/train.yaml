@@ -11,6 +11,8 @@ hydra:
   job:
     config:
       override_dirname:
+        kv_sep: ':'
+        item_sep: '-'
         exclude_keys: ['resume_ckpt_path']
   run:
     dir: ../logs/${hydra.job.name}/${now:%Y-%m-%d_%H-%M-%S}
