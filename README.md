@@ -88,6 +88,9 @@ python test.py weight=[PATH_TO_WEIGHT] tester=acc,fourier,spacial -m
 coming soon
 
 ### Test
+
+#### Fourier heatmap
+
 | dataset | model | eps | source | source aug | target | target aug | unfreeze  | heatmap | samples | id
 ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----
 | cifar10 | resnet56 | 16(l2) | cifar10 | -              | - | - | - | <img src="samples/fourier_heatmap/train/2020-06-26_12-55-57_cifar10/fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/train/2020-06-26_12-55-57_cifar10/example_images.png" height="100px"> | 2020-06-26_12-55-57_cifar10
@@ -103,8 +106,11 @@ coming soon
 | cifar10 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | patch gaussian | cifar10 | - | level2 | <img src="samples/fourier_heatmap/transfer/2020-07-04_07-06-54_fbdb_l2_basis-0031_cls-0022_patch_gaussian_cifar10_unfreeze_level=2/fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/transfer/2020-07-04_07-06-54_fbdb_l2_basis-0031_cls-0022_patch_gaussian_cifar10_unfreeze_level=2/example_images.png" height="100px"> | 2020-07-04_07-06-54_fbdb_l2_basis-0031_cls-0022_patch_gaussian_cifar10
 | cifar10 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | patch gaussian | cifar10 | - | level3 | <img src="samples/fourier_heatmap/transfer/2020-07-04_07-06-54_fbdb_l2_basis-0031_cls-0022_patch_gaussian_cifar10_unfreeze_level=3/fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/transfer/2020-07-04_07-06-54_fbdb_l2_basis-0031_cls-0022_patch_gaussian_cifar10_unfreeze_level=3/example_images.png" height="100px"> | 2020-07-04_07-06-54_fbdb_l2_basis-0031_cls-0022_patch_gaussian_cifar10
 
+#### Spacial sensitivity
 
-
+| model | source | source aug | target | target aug | spacial sensitivity |
+| - | - | - | - | - | - |
+| resnet56 | fbdb_l2_basis-0031_cls-0022 | patch gaussian | cifar10 | -  | <img src="samples/spacial_sensitivity/fbdb_l2_basis-0031_cls-0022_cifar10_spacial/plot_patch_shuffle.png" height="100px">
 
 ### Named Params
 | model | keys |

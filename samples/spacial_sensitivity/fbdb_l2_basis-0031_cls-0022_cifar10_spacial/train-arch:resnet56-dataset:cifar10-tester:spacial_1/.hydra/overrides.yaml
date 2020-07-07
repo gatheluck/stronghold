@@ -1,0 +1,4 @@
+- tester=spacial
+- dataset=cifar10
+- arch=resnet56
+- weight=../logs/train/2020-07-03_16-25-20_cifar10_patch_gaussian/checkpoint/model_weight_final.pth
