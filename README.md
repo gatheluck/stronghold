@@ -38,9 +38,10 @@ Hyperparam samples:
 
 Currently following types of test are supported.
 
-- acc: evaluate standard and robust accuracy
-- fourier: create Fourier heatmap
-- spacial: evaluate spacial sensitivity by patch shuffle
+- acc: evaluate standard and robust accuracy.
+- fourier: create Fourier heatmap.
+- spacial: evaluate spacial sensitivity by patch shuffle.
+- corruption: evaluate corruption accuracy. currently only CIFAR10-C is supported.
 
 Example code:
 ```
@@ -59,28 +60,28 @@ python test.py weight=[PATH_TO_WEIGHT] tester=acc,fourier,spacial -m
 
 ## Note
 ### Train
-| dataset | augmentation | model | batch size | ep  |  loss | train acc | val acc | optim | lr | mom | decay | schduler | step | gamma | id
----- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
-| CIFAR-10 | -  | resnet56 | 256 | 90 | 0.4557 | 92.88 | 86.23 | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-26_12-55-57_cifar10
-| CIFAR-10 | Patch Gaussian | resnet56 | 256 | 90 | 0.4395 | 85.54 | 85.36 | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-07-03_16-25-20_cifar10_patch_gaussian
-| fbdb_l2_basis-0031_cls-0022 | - | resnet50 | 256 | 90  | 0.1136  | 97.31 | 96.39 | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-25_16-03-46_fbdb_l2_basis-0031_cls-0022
-| fbdb_l2_basis-0031_cls-0022 | - | resnet56 | 256 | 90  | 0.04835  | 99.32 | 98.79  | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022
-| fbdb_l2_basis-0031_cls-0022 | Patch Gaussian | resnet56 | 256 | 90 | 0.0583 | 98.61  | 98.57 | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-07-03_17-01-17_fbdb_l2_basis-0031_cls-0022_patch_gaussian
+| dataset | augmentation | model | batch size | ep  |  loss | train acc | val acc | mean corruption acc | optim | lr | mom | decay | schduler | step | gamma | id
+---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----
+| CIFAR-10 | -  | resnet56 | 256 | 90 | 0.4557 | 92.88 | 86.23 | 66.1 | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-26_12-55-57_cifar10
+| CIFAR-10 | Patch Gaussian | resnet56 | 256 | 90 | 0.4395 | 85.54 | 85.36 | 73.1 |  SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-07-03_16-25-20_cifar10_patch_gaussian
+| fbdb_l2_basis-0031_cls-0022 | - | resnet50 | 256 | 90  | 0.1136  | 97.31 | 96.39 | - | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-25_16-03-46_fbdb_l2_basis-0031_cls-0022
+| fbdb_l2_basis-0031_cls-0022 | - | resnet56 | 256 | 90  | 0.04835  | 99.32 | 98.79  | - | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022
+| fbdb_l2_basis-0031_cls-0022 | Patch Gaussian | resnet56 | 256 | 90 | 0.0583 | 98.61  | 98.57 | - | SGD | 0.01 | 0.9 | 0.0001 | multi step | 30,60,80 | 0.1 | 2020-07-03_17-01-17_fbdb_l2_basis-0031_cls-0022_patch_gaussian
 
 ### Transfer
 #### from fbdb_l2_basis-0031_cls-0022
-| source | source aug | target | target aug | model | batch size | ep  | loss | train acc | val acc | optim | lr | mom | decay | schduler | step | gamma | unfreeze | id
----- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- 
-| fbdb_l2_basis-0031_cls-0022 | - | CIFAR-10 | - | resnet50 | 256 | 50 |  2.180 | 18.74 | 19.35 | SGD | 0.01 | 0.9 | 0.0001 | step      | 30       | 0.1 | level_0 | 2020-06-25_16-57-11_fbdb_l2_basis-0031_cls-0022_cifar10
-| fbdb_l2_basis-0031_cls-0022 | - | CIFAR-10 | - | resnet50 | 256 | 90 |  2.138 | 20.60 | 21.18 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_0 | 2020-06-25_17-22-20_fbdb_l2_basis-0031_cls-0022_cifar10
-| fbdb_l2_basis-0031_cls-0022 | - | CIFAR-10 | - | resnet56 | 256 | 90 |  1.919 | 30.50 | 32.12 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_0 | 2020-07-05_03-14-37_fbdb_l2_basis-0031_cls-0022_cifar10
-| fbdb_l2_basis-0031_cls-0022 | - | CIFAR-10 | - | resnet56 | 256 | 90 |  0.997 | 67.19 | 65.39 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_1 | 2020-07-05_03-14-37_fbdb_l2_basis-0031_cls-0022_cifar10
-| fbdb_l2_basis-0031_cls-0022 | - | CIFAR-10 | - | resnet56 | 256 | 90 |  0.660 | 83.24 | 78.18 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_2 | 2020-07-05_03-14-37_fbdb_l2_basis-0031_cls-0022_cifar10
-| fbdb_l2_basis-0031_cls-0022 | - | CIFAR-10 | - | resnet56 | 256 | 90 |  0.463 | 92.92 | 86.33 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_3 | 2020-07-05_03-14-37_fbdb_l2_basis-0031_cls-0022_cifar10
-| fbdb_l2_basis-0031_cls-0022 | patch gaussian | CIFAR-10 | - | resnet56 | 256 | 90 | 1.933 | 30.27 | 32.27 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_0 | 2020-07-04_07-06-54_fbdb_l2_basis-0031_cls-0022_patch_gaussian_cifar10
-| fbdb_l2_basis-0031_cls-0022 | patch gaussian | CIFAR-10 | - | resnet56 | 256 | 90 | 0.962 | 65.84 | 63.77 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_1 | 2020-07-04_07-06-54_fbdb_l2_basis-0031_cls-0022_patch_gaussian_cifar10
-| fbdb_l2_basis-0031_cls-0022 | patch gaussian | CIFAR-10 | - | resnet56 | 256 | 90 | 0.454 | 83.01 | 77.70 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_2 | 2020-07-04_07-06-54_fbdb_l2_basis-0031_cls-0022_patch_gaussian_cifar10
-| fbdb_l2_basis-0031_cls-0022 | patch gaussian | CIFAR-10 | - | resnet56 | 256 | 90 | 0.216 | 92.51 | 85.25 | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_3 | 2020-07-04_07-06-54_fbdb_l2_basis-0031_cls-0022_patch_gaussian_cifar10
+| source | source aug | target | target aug | model | batch size | ep  | loss | train acc | val acc | mean corruption acc | optim | lr | mom | decay | schduler | step | gamma | unfreeze | id
+---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- 
+| fbdb_l2_basis-0031_cls-0022 | - | CIFAR-10 | - | resnet50 | 256 | 50 |  2.180 | 18.74 | 19.35 | - | SGD | 0.01 | 0.9 | 0.0001 | step      | 30       | 0.1 | level_0 | 2020-06-25_16-57-11_fbdb_l2_basis-0031_cls-0022_cifar10
+| fbdb_l2_basis-0031_cls-0022 | - | CIFAR-10 | - | resnet50 | 256 | 90 |  2.138 | 20.60 | 21.18 | - | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_0 | 2020-06-25_17-22-20_fbdb_l2_basis-0031_cls-0022_cifar10
+| fbdb_l2_basis-0031_cls-0022 | - | CIFAR-10 | - | resnet56 | 256 | 90 |  1.919 | 30.50 | 32.12 |   | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_0 | 2020-07-05_03-14-37_fbdb_l2_basis-0031_cls-0022_cifar10
+| fbdb_l2_basis-0031_cls-0022 | - | CIFAR-10 | - | resnet56 | 256 | 90 |  0.997 | 67.19 | 65.39 |   | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_1 | 2020-07-05_03-14-37_fbdb_l2_basis-0031_cls-0022_cifar10
+| fbdb_l2_basis-0031_cls-0022 | - | CIFAR-10 | - | resnet56 | 256 | 90 |  0.660 | 83.24 | 78.18 |   | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_2 | 2020-07-05_03-14-37_fbdb_l2_basis-0031_cls-0022_cifar10
+| fbdb_l2_basis-0031_cls-0022 | - | CIFAR-10 | - | resnet56 | 256 | 90 |  0.463 | 92.92 | 86.33 |   | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_3 | 2020-07-05_03-14-37_fbdb_l2_basis-0031_cls-0022_cifar10
+| fbdb_l2_basis-0031_cls-0022 | patch gaussian | CIFAR-10 | - | resnet56 | 256 | 90 | 1.933 | 30.27 | 32.27 |   | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_0 | 2020-07-04_07-06-54_fbdb_l2_basis-0031_cls-0022_patch_gaussian_cifar10
+| fbdb_l2_basis-0031_cls-0022 | patch gaussian | CIFAR-10 | - | resnet56 | 256 | 90 | 0.962 | 65.84 | 63.77 |   | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_1 | 2020-07-04_07-06-54_fbdb_l2_basis-0031_cls-0022_patch_gaussian_cifar10
+| fbdb_l2_basis-0031_cls-0022 | patch gaussian | CIFAR-10 | - | resnet56 | 256 | 90 | 0.454 | 83.01 | 77.70 |   | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_2 | 2020-07-04_07-06-54_fbdb_l2_basis-0031_cls-0022_patch_gaussian_cifar10
+| fbdb_l2_basis-0031_cls-0022 | patch gaussian | CIFAR-10 | - | resnet56 | 256 | 90 | 0.216 | 92.51 | 85.25 |   | SGD | 0.01 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | level_3 | 2020-07-04_07-06-54_fbdb_l2_basis-0031_cls-0022_patch_gaussian_cifar10
 
 
 #### from fbdb_full_basis-0031_cls-0961
@@ -91,12 +92,12 @@ coming soon
 
 #### Fourier heatmap
 
-| dataset | model | eps | source | source aug | target | target aug | unfreeze  | heatmap | samples | id
----- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----
-| cifar10 | resnet56 | 16(l2) | cifar10 | -              | - | - | - | <img src="samples/fourier_heatmap/train/2020-06-26_12-55-57_cifar10/fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/train/2020-06-26_12-55-57_cifar10/example_images.png" height="100px"> | 2020-06-26_12-55-57_cifar10
-| cifar10 | resnet56 | 16(l2) | cifar10 | patch gaussian | - | - | - | <img src="samples/fourier_heatmap/train/2020-07-03_16-25-20_cifar10_patch_gaussian/fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/train/2020-07-03_16-25-20_cifar10_patch_gaussian/example_images.png" height="100px"> | 2020-07-03_16-25-20_cifar10_patch_gaussian
-| fbdb_l2_basis-0031_cls-0022 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | - | - | - | - | <img src="samples/fourier_heatmap/train/2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022/fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/train/2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022/example_images.png" height="100px"> | 2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022
-| fbdb_l2_basis-0031_cls-0022 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | patch gaussian | - | - | - | <img src="samples/fourier_heatmap/train/2020-07-03_17-01-17_fbdb_l2_basis-0031_cls-0022_patch_gaussian/fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/train/2020-07-03_17-01-17_fbdb_l2_basis-0031_cls-0022_patch_gaussian/example_images.png" height="100px">  | 2020-07-03_17-01-17_fbdb_l2_basis-0031_cls-0022 
+| dataset | model | eps | source | source aug | target | target aug | unfreeze | heatmap | samples | corruption |  id
+---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----
+| cifar10 | resnet56 | 16(l2) | cifar10 | -              | - | - | - | <img src="samples/fourier_heatmap/train/2020-06-26_12-55-57_cifar10/fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/train/2020-06-26_12-55-57_cifar10/example_images.png" height="100px"> | <img src="samples/corruption/train/2020-07-08_09-57-23_corruption_cifar10/plot_result.png" height="100px">  | 2020-06-26_12-55-57_cifar10
+| cifar10 | resnet56 | 16(l2) | cifar10 | patch gaussian | - | - | - | <img src="samples/fourier_heatmap/train/2020-07-03_16-25-20_cifar10_patch_gaussian/fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/train/2020-07-03_16-25-20_cifar10_patch_gaussian/example_images.png" height="100px"> | <img src="samples/corruption/train/2020-07-08_10-03-01_corruption_cifar10_patch_gaussian/plot_result.png" height="100px">  | 2020-07-03_16-25-20_cifar10_patch_gaussian
+| fbdb_l2_basis-0031_cls-0022 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | - | - | - | - | <img src="samples/fourier_heatmap/train/2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022/fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/train/2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022/example_images.png" height="100px"> | - |2020-06-25_17-56-30_fbdb_l2_basis-0031_cls-0022
+| fbdb_l2_basis-0031_cls-0022 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | patch gaussian | - | - | - | <img src="samples/fourier_heatmap/train/2020-07-03_17-01-17_fbdb_l2_basis-0031_cls-0022_patch_gaussian/fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/train/2020-07-03_17-01-17_fbdb_l2_basis-0031_cls-0022_patch_gaussian/example_images.png" height="100px">  | - | 2020-07-03_17-01-17_fbdb_l2_basis-0031_cls-0022 
 | cifar10 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | - | cifar10 | - | level0 | <img src="samples/fourier_heatmap/transfer/2020-07-05_03-14-37_fbdb_l2_basis-0031_cls-0022_cifar10_unfreeze_level=0/fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/transfer/2020-07-05_03-14-37_fbdb_l2_basis-0031_cls-0022_cifar10_unfreeze_level=0/example_images.png" height="100px"> | 2020-07-05_04-54-18_fbdb_l2_basis-0031_cls-0022_cifar10
 | cifar10 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | - | cifar10 | - | level1 | <img src="samples/fourier_heatmap/transfer/2020-07-05_03-14-37_fbdb_l2_basis-0031_cls-0022_cifar10_unfreeze_level=1/fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/transfer/2020-07-05_03-14-37_fbdb_l2_basis-0031_cls-0022_cifar10_unfreeze_level=1/example_images.png" height="100px"> | 2020-07-05_04-54-18_fbdb_l2_basis-0031_cls-0022_cifar10
 | cifar10 | resnet56 | 16(l2) | fbdb_l2_basis-0031_cls-0022 | - | cifar10 | - | level2 | <img src="samples/fourier_heatmap/transfer/2020-07-05_03-14-37_fbdb_l2_basis-0031_cls-0022_cifar10_unfreeze_level=2/fhmap.png" height="100px"> | <img src="samples/fourier_heatmap/transfer/2020-07-05_03-14-37_fbdb_l2_basis-0031_cls-0022_cifar10_unfreeze_level=2/example_images.png" height="100px"> | 2020-07-05_04-54-18_fbdb_l2_basis-0031_cls-0022_cifar10
