@@ -20,16 +20,18 @@ from libs.logger import Logger
 
 from submodules.ModelBuilder.model_builder import ModelBuilder
 from submodules.DatasetBuilder.dataset_builder import DatasetBuilder
+from submodules.DatasetBuilder.libs.eval import evaluate_corruption_accuracy
 from submodules.AttackBuilder.attack_builder import AttackBuilder
 from submodules.AttackBuilder.attacks.utils import Denormalizer
 from submodules.FourierHeatmap.fhmap.fourier_heatmap import create_fourier_heatmap
 from submodules.CnnSpacialSensitivity.spatial_sensitivity.patch_shuffle import eval_patch_shuffle
 
 
-SUPPORTED_TESTER = 'acc fourier spacial'.split()
+SUPPORTED_TESTER = 'acc fourier spacial corruption'.split()
 # - acc: test standard and robust acc
 # - fourier: generate fourier heatmap
 # - spacial: test spacial sensitity
+# - corruption: evaluate corruption accuracy
 
 
 def eval_accuracy(model, hydra_logger, cfg):
@@ -87,6 +89,17 @@ def eval_accuracy(model, hydra_logger, cfg):
         hydra_logger.info('{k}: {v}'.format(k=k, v=v))
 
 
+def eval_corruption_accuracy(model, cfg):
+    """
+    evaluate corruption accuracy.
+    currntly only valid for cifar10c.
+    """
+    assert cfg.dataset.name in 'cifar10c'.split(), 'this dataset is not supported to evaluate corruption.'
+
+    dataset_builder = DatasetBuilder(root_path=os.path.join(hydra.utils.get_original_cwd(), '../data'), **cfg.dataset)
+    evaluate_corruption_accuracy(model, dataset_builder, log_dir='.', corruptions=cfg.dataset.corruptions, **cfg)
+
+
 def eval_fourier_heatmap(model, cfg):
     """
     create fourier heatmap.
@@ -107,9 +120,8 @@ def eval_spacial_sensitivity(model, cfg):
 
 @hydra.main(config_path='../conf/test.yaml')
 def main(cfg: omegaconf.DictConfig):
-    assert cfg.weight is not None, 'please specify [weight] option'
-    if cfg.tester.name not in SUPPORTED_TESTER:
-        raise ValueError
+    assert cfg.weight is not None, 'please specify [weight] option.'
+    assert cfg.tester.name in SUPPORTED_TESTER, 'specified [tester] option is not suppored type.'
 
     # fix weight bacause hydra change the current working dir
     cfg.weight = os.path.join(hydra.utils.get_original_cwd(), cfg.weight)
@@ -134,6 +146,8 @@ def main(cfg: omegaconf.DictConfig):
     # eval
     if cfg.tester.name == 'acc':
         eval_accuracy(model, hydra_logger, cfg)
+    elif cfg.tester.name == 'corruption':
+        eval_corruption_accuracy(model, cfg)
     elif cfg.tester.name == 'fourier':
         eval_fourier_heatmap(model, cfg)
     elif cfg.tester.name == 'spacial':
