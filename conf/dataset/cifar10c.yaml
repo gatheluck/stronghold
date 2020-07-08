@@ -1,0 +1,7 @@
+dataset: 
+  name: cifar10c
+  mean: [0.49139968, 0.48215841, 0.44653091]
+  std: [0.24703223, 0.24348513, 0.26158784]
+  num_classes: 10
+  input_size: 32
+  corruptions: [gaussian_noise, shot_noise, speckle_noise, impulse_noise, defocus_blur, gaussian_blur, motion_blur, zoom_blur, snow, fog, brightness, contrast, elastic_transform, pixelate, jpeg_compression, spatter, saturate, frost]
