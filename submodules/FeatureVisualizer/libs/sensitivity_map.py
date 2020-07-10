@@ -1,7 +1,11 @@
+import collections
 import os
+import random
 import sys
 
 import torch
+import torchvision
+import tqdm
 from torch.autograd.gradcheck import zero_gradients
 
 base = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../")
@@ -53,7 +57,7 @@ def unnormalize(x, mean, std, device: str):
 
 
 class VanillaGrad:
-    def __init__(self, model, num_classes: int, device: int):
+    def __init__(self, model, num_classes: int, device: int, **kwargs):
         self.num_classes = num_classes
         self.device = device
         self.model = model
@@ -79,6 +83,7 @@ class LossGrad:
         num_classes: int,
         device: str,
         criterion=torch.nn.CrossEntropyLoss(),
+        **kwargs
     ):
         self.num_classes = num_classes
         self.device = device
@@ -100,9 +105,93 @@ class LossGrad:
         return grad.detach()
 
 
+def visualize_sensitivity_map(
+    model,
+    dataset_builder,
+    num_samples: int,
+    num_classes: int,
+    ratio: float,
+    method: str,
+    log_dir: str,
+    device: str,
+    **kwargs
+):
+    """
+    Visualize sensitivity map.
+    To make this function simple, this function shuffle the dataset and save images specified by [num_samples].
+
+    Args:
+    - model
+    - dataset_builder
+    - num_sampels
+    - num_classes
+    - method
+    - log_dir
+    - device
+    """
+    SUPPORTED_VISUALIZER = set("vanilla loss".split())
+    assert (
+        num_samples > 0 or num_samples == -1
+    ), "[num_samples] option should be larger than 0 or -1."
+    assert method in SUPPORTED_VISUALIZER, "specified [method] option is not supported."
+    assert ratio > 1.0, "[ratio] option should be larger than 1.0."
+
+    dataset = dataset_builder(train=False, normalize=True)
+    mean, std = dataset_builder.mean, dataset_builder.std
+    if num_samples != -1:
+        num_samples = min(num_samples, len(dataset))
+        random.seed(0)  # fix seed.
+        indices = range(len(dataset))
+        indices = random.sample(indices, num_samples)
+        dataset = torch.utils.data.Subset(dataset, indices)
+
+    loader = torch.utils.data.DataLoader(
+        dataset, batch_size=1, shuffle=False, pin_memory=True
+    )
+
+    model = model.to(device)
+    model.eval()
+
+    visualizer = None
+    if method == "vanilla":
+        visualizer = VanillaGrad(model, num_classes=num_classes, device=device)
+    elif method == "loss":
+        visualizer = LossGrad(model, num_classes=num_classes, device=device)
+    else:
+        raise NotImplementedError
+
+    with tqdm.tqdm(total=len(dataset), ncols=80) as pbar:
+        for itr, (x, t) in enumerate(loader):
+            x, t = x.to(device), t.to(device)
+
+            grad = visualizer(x, t)
+            x_cat = torch.cat(
+                [
+                    unnormalize(x, mean, std, device),
+                    normalize_and_adjust(grad, ratio, device),
+                ]
+            )
+            torchvision.utils.save_image(
+                x_cat.detach(),
+                os.path.join(
+                    log_dir,
+                    "result_{vis}_{num:03d}.png".format(
+                        vis=visualizer.__class__.__name__, num=itr
+                    ),
+                ),
+                padding=0,
+            )
+
+            pbar.set_postfix(
+                collections.OrderedDict(
+                    visualizer_type="{}".format(visualizer.__class__.__name__)
+                )
+            )
+            pbar.update()
+
+
 if __name__ == "__main__":
     import PIL
-    import torchvision
 
     num_classes = 100
     device = "cuda"

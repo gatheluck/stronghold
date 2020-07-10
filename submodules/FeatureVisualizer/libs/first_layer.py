@@ -34,7 +34,7 @@ def extract_target_modules(
 
 
 def save_first_layer_weight(
-    model, log_path: str, bias: int = 0.5, is_orator: bool = True
+    model, log_path: str, bias: int = 0.5, is_orator: bool = True, **kwargs
 ) -> None:
     """
     save weight of first conv as images.
