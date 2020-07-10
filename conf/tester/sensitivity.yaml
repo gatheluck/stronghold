@@ -1,0 +1,5 @@
+tester:
+  name: sensitivity
+  ratio: 5.0
+  method: loss
+  
