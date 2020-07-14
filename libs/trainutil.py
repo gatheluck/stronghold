@@ -25,10 +25,6 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig, outname: 
     - cfg: config for train.
     - outname: name of output weight file. if specify None or '', model weight is not saved.
     """
-    # fix relative path because hydra automatically change the current working dirctory.
-    if 'resume_ckpt_path' in cfg.keys():
-        cfg.resume_ckpt_path = os.path.join(hydra.utils.get_original_cwd(), cfg.resume_ckpt_path) if not cfg.resume_ckpt_path.startswith('/') else cfg.resume_ckpt_path
-
     # hydra logger
     hydra_logger = logging.getLogger(__name__)
     hydra_logger.info(' '.join(sys.argv))
@@ -69,7 +65,7 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig, outname: 
         checkpoint_callback=checkpoint_callback,
         default_save_path='.',
         weights_save_path='.',
-        resume_from_checkpoint=cfg.resume_ckpt_path if 'resume_ckpt_path' in cfg.keys() else None  # if not None, resume from checkpoint
+        resume_from_checkpoint=cfg.resume_ckpt_path  # if not None, resume from checkpoint
     )
 
     # train lightning model
