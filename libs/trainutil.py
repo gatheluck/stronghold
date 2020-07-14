@@ -65,7 +65,7 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig, outname: 
         checkpoint_callback=checkpoint_callback,
         default_save_path='.',
         weights_save_path='.',
-        resume_from_checkpoint=cfg.resume_ckpt_path  # if not None, resume from checkpoint
+        resume_from_checkpoint=cfg.resume_ckpt_path if 'resume_ckpt_path' in cfg.keys() else None  # if not None, resume from checkpoint
     )
 
     # train lightning model
