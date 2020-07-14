@@ -58,7 +58,7 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig, outname: 
         fast_dev_run=False,  # if it is True, run only one batch for each epoch. it is useful for debuging
         gpus=cfg.gpus,
         num_nodes=cfg.num_nodes,
-        distributed_backend='dp' if cfg.gpus == 1 else cfg.distributed_backend,  # check https://pytorch-lightning.readthedocs.io/en/stable/trainer.html#distributed-backend
+        distributed_backend=cfg.distributed_backend,  # check https://pytorch-lightning.readthedocs.io/en/stable/trainer.html#distributed-backend
         max_epochs=cfg.epochs,
         min_epochs=cfg.epochs,
         logger=loggers,
