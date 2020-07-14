@@ -5,6 +5,7 @@ base = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../')
 sys.path.append(base)
 
 from datetime import datetime
+import omegaconf
 import itertools
 import torch
 
@@ -57,6 +58,26 @@ def check_required_keys(required_keys: set, input_args: dict) -> None:
     for k in required_keys:
         if k not in input_args.keys():
             raise ValueError('initial args are invalid.')
+
+
+def cfg_to_tags(cfg) -> list:
+    """
+    convert omegaconf to list.
+    """
+    if not cfg:
+        return list()
+
+    tags = list()
+    for k, v in omegaconf.OmegaConf.to_container(cfg).items():
+        if not isinstance(v, dict):
+            tags.append(':'.join([k, str(v)]))
+        else:
+            if 'name' in v.keys():
+                tags.append(':'.join([k, v['name']]))
+            else:
+                pass
+
+    return tags
 
 
 def get_epoch_end_log(outputs: list) -> dict:
