@@ -13,6 +13,7 @@ import pytorch_lightning
 
 from libs.io import save_model
 from libs.litmodel import LitModel
+from libs.utils import cfg_to_tags
 
 
 def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig, outname: str = 'model_weight_final.pth'):
@@ -35,7 +36,9 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig, outname: 
     # add online logger
     api_key = os.environ.get('ONLINE_LOGGER_API_KEY')
     if api_key and cfg.online_logger.activate:
-        loggers.append(pytorch_lightning.loggers.CometLogger(api_key=api_key))
+        comet_logger = pytorch_lightning.loggers.CometLogger(api_key=api_key)
+        comet_logger.experiment.add_tags(cfg_to_tags(cfg))
+        loggers.append(comet_logger)
     # log hyperparams
     for logger in loggers:
         logger.log_hyperparams(omegaconf.OmegaConf.to_container(cfg))
