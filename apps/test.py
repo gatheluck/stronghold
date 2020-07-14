@@ -136,7 +136,7 @@ def eval_fourier_heatmap(model, cfg):
     dataset_builder = DatasetBuilder(
         root_path=os.path.join(hydra.utils.get_original_cwd(), "../data"), **cfg.dataset
     )
-    create_fourier_heatmap(model, dataset_builder, log_dir=".", **cfg.tester)
+    create_fourier_heatmap(model, dataset_builder, norm_type='linf', log_dir=".", **cfg.tester)
 
 
 def eval_spacial_sensitivity(model, cfg):
