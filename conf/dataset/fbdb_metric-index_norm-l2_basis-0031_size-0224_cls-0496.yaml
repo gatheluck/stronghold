@@ -1,0 +1,6 @@
+dataset:
+  name: fbdb_metric-index_norm-l2_basis-0031_size-0224_cls-0496
+  mean:
+  std:
+  num_classes: 496
+  input_size: 32
