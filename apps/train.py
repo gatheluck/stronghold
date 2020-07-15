@@ -21,6 +21,9 @@ def main(cfg: omegaconf.DictConfig) -> None:
             else cfg.resume_ckpt_path  # absolute path is not affected by hydra.
         )
 
+    if cfg.hydra_id is None:
+        cfg.hydra_id = os.path.basename(os.getcwd())
+
     # build model and train
     model = ModelBuilder(num_classes=cfg.dataset.num_classes, pretrained=False)[
         cfg.arch

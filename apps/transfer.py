@@ -28,6 +28,9 @@ def main(cfg: omegaconf.DictConfig) -> None:
     if not cfg.unfreeze_params:
         cfg.unfreeze_params = UNFREEZE_PARAMS[cfg.arch][cfg.unfreeze_level]
 
+    if cfg.hydra_id is None:
+        cfg.hydra_id = os.path.basename(os.getcwd())
+
     # build model and train
     model = ModelBuilder(num_classes=cfg.source_num_classes, pretrained=False)[cfg.arch]
     load_model(model, cfg.weight)  # load model weight

@@ -193,6 +193,9 @@ def main(cfg: omegaconf.DictConfig):
     hydra_logger.info(cfg.pretty())
     cfg.attack.step_size = eval(cfg.attack.step_size)  # eval actual value of step_size
 
+    if cfg.hydra_id is None:
+        cfg.hydra_id = os.path.basename(os.getcwd())
+
     # build model
     model = ModelBuilder(num_classes=cfg.dataset.num_classes, pretrained=False)[
         cfg.arch
