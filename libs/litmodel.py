@@ -7,6 +7,7 @@ sys.path.append(base)
 import hydra
 import omegaconf
 import itertools
+import logging
 import torch
 import torchvision
 import pytorch_lightning
@@ -20,6 +21,37 @@ from libs.utils import get_epoch_end_log
 from submodules.DatasetBuilder.dataset_builder import DatasetBuilder
 from submodules.ModelBuilder.model_builder import ModelBuilder
 from submodules.PatchGaussian.patch_gaussian import AddPatchGaussian
+
+
+class LitCallback(pytorch_lightning.callbacks.Callback):
+    """
+    Callback class used in [pytorch_lightning.trainer.Trainer] class.
+    For detail, please check following docs:
+    - https://pytorch-lightning.readthedocs.io/en/stable/callbacks.html
+    - https://pytorch-lightning.readthedocs.io/en/stable/trainer.html#callbacks
+    """
+    def on_train_start(self, trainer, pl_module):
+        print("Training is started!")
+
+    def on_train_end(self, trainer, pl_module):
+        logging.info('Training is successfully ended!')
+
+        # save state dict to local.
+        local_save_path = os.path.join(os.getcwd(), 'checkpoint', 'model_weight_final.pth')
+        save_model(trainer.model, local_save_path)
+        logging.info('Trained model is successfully saved to [{path}]'.format(path=local_save_path))
+
+        # logging to online logger
+        for logger in trainer.logger:
+            if isinstance(logger, pytorch_lightning.loggers.comet.CometLogger):
+                # log model to comet: # https://www.comet.ml/docs/python-sdk/Experiment/#experimentlog_model
+                if trainer.model is None:
+                    logging.info('There is no model to log because [trainer.model] is None.')
+                    pass
+                else:
+                    # model_state_dict = trainer.model.module.state_dict() if isinstance(trainer.model, torch.nn.DataParallel) else trainer.model.state_dict()
+                    logger.experiment.log_model('checkpoint', local_save_path)
+                    logging.info('Trained model is successfully saved to comet as state dict.')
 
 
 class LitModel(pytorch_lightning.LightningModule):
