@@ -83,4 +83,6 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig):
     # IMPORTANT: above save process is move to [LitCallback] class in [litmodel.py].
 
     # test trained model
-    trainer.test()
+    # trainer.test()
+
+    logging.info('function [lightning_train] is successfully ended.')

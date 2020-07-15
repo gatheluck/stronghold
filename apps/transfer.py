@@ -6,6 +6,7 @@ sys.path.append(base)
 
 import hydra
 import omegaconf
+import logging
 
 from libs.trainutil import lightning_train
 from libs.utils import UNFREEZE_PARAMS
@@ -37,6 +38,8 @@ def main(cfg: omegaconf.DictConfig) -> None:
     replace_final_fc(cfg.arch, model, cfg.dataset.num_classes)  # replace fc
     freeze_params(model, cfg.unfreeze_params)  # freeze some params
     lightning_train(model, cfg)
+
+    logging.info('[transfer.py] is successfully ended.')
 
 
 if __name__ == '__main__':

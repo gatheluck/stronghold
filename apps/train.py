@@ -2,6 +2,7 @@ import os
 import sys
 
 import hydra
+import logging
 import omegaconf
 
 base = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../")
@@ -29,6 +30,8 @@ def main(cfg: omegaconf.DictConfig) -> None:
         cfg.arch
     ]
     lightning_train(model, cfg)
+
+    logging.info('[train.py] is successfully ended.')
 
 
 if __name__ == "__main__":

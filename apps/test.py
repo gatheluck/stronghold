@@ -225,6 +225,8 @@ def main(cfg: omegaconf.DictConfig):
     else:
         raise NotImplementedError
 
+    logging.info('[test.py] is successfully ended.')
+
 
 if __name__ == "__main__":
     main()
