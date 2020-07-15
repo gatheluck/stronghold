@@ -31,7 +31,7 @@ class LitCallback(pytorch_lightning.callbacks.Callback):
     - https://pytorch-lightning.readthedocs.io/en/stable/trainer.html#callbacks
     """
     def on_train_start(self, trainer, pl_module):
-        print("Training is started!")
+        logging.info('Training is started!')
 
     def on_train_end(self, trainer, pl_module):
         logging.info('Training is successfully ended!')
@@ -44,7 +44,10 @@ class LitCallback(pytorch_lightning.callbacks.Callback):
         # logging to online logger
         for logger in trainer.logger:
             if isinstance(logger, pytorch_lightning.loggers.comet.CometLogger):
-                # log model to comet: # https://www.comet.ml/docs/python-sdk/Experiment/#experimentlog_model
+                # log local log to comet: https://www.comet.ml/docs/python-sdk/Experiment/#experimentlog_asset_folder
+                logger.experiment.log_asset_folder(os.getcwd(), log_file_name=True, recursive=True)
+
+                # log model to comet: https://www.comet.ml/docs/python-sdk/Experiment/#experimentlog_model
                 if trainer.model is None:
                     logging.info('There is no model to log because [trainer.model] is None.')
                     pass
