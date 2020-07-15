@@ -13,10 +13,11 @@ import pytorch_lightning
 
 from libs.io import save_model
 from libs.litmodel import LitModel
+from libs.litmodel import LitCallback
 from libs.utils import cfg_to_tags
 
 
-def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig, outname: str = 'model_weight_final.pth'):
+def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig):
     """
     execute train (or transfer) by pytorch lightning.
     if you want do transfer learning, the weight loading and parameter freezing should be done before hand.
@@ -24,7 +25,6 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig, outname: 
     Args
     - model: pytorch model (for transfer learning, please load weight before hand).
     - cfg: config for train.
-    - outname: name of output weight file. if specify None or '', model weight is not saved.
     """
     # hydra logger
     hydra_logger = logging.getLogger(__name__)
@@ -42,6 +42,7 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig, outname: 
     # log hyperparams
     for logger in loggers:
         logger.log_hyperparams(omegaconf.OmegaConf.to_container(cfg))
+        print(isinstance(logger, pytorch_lightning.loggers.comet.CometLogger))
 
     # this callback function is called by lightning when saving checkpoint
     checkpoint_callback = pytorch_lightning.callbacks.ModelCheckpoint(
@@ -54,6 +55,8 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig, outname: 
         prefix=cfg.prefix
     )
 
+    trainer_callbacks = [LitCallback()]
+
     # trainer class used for lightning. this class has so many args. for detail, please check official docs: https://pytorch-lightning.readthedocs.io/en/stable/api/pytorch_lightning.trainer.html?highlight=trainer#trainer-class 
     trainer = pytorch_lightning.trainer.Trainer(
         deterministic=False,  # set True when you need reproductivity.
@@ -65,6 +68,7 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig, outname: 
         max_epochs=cfg.epochs,
         min_epochs=cfg.epochs,
         logger=loggers,
+        callbacks=trainer_callbacks,
         checkpoint_callback=checkpoint_callback,
         default_save_path='.',
         weights_save_path='.',
@@ -74,8 +78,9 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig, outname: 
     # train lightning model
     litmodel = LitModel(model, cfg)
     trainer.fit(litmodel)
-    if outname:
-        save_model(litmodel.model, os.path.join(os.getcwd(), 'checkpoint', outname))  # manual backup of final model weight.
+    # if outname:
+    #     save_model(litmodel.model, os.path.join(os.getcwd(), 'checkpoint', outname))  # manual backup of final model weight.
+    # IMPORTANT: above save process is move to [LitCallback] class in [litmodel.py].
 
     # test trained model
     trainer.test()
