@@ -201,7 +201,7 @@ def main(cfg: omegaconf.DictConfig):
         cfg.arch
     ]
     try:
-        hydra_logger.info("loading weight from {weight}".format(weight=cfg.weight))
+        hydra_logger.info("loading weight from [{weight}]".format(weight=cfg.weight))
         load_model(model, cfg.weight)  # load model weight
         model = model.to(cfg.device)
         model.eval()
