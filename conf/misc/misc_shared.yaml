@@ -3,4 +3,5 @@ normalize: True
 num_workers: 8
 gpus: 1
 prefix: ''
+project_name: null
 hydra_id: null

@@ -36,7 +36,7 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig):
     # add online logger
     api_key = os.environ.get('ONLINE_LOGGER_API_KEY')
     if api_key and cfg.online_logger.activate:
-        comet_logger = pytorch_lightning.loggers.CometLogger(api_key=api_key)
+        comet_logger = pytorch_lightning.loggers.CometLogger(api_key=api_key, project_name=cfg.project_name)
         comet_logger.experiment.add_tags(cfg_to_tags(cfg))
         loggers.append(comet_logger)
     # log hyperparams
