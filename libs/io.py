@@ -1,6 +1,7 @@
 import copy
 import torch
 import omegaconf
+from collections import OrderedDict
 
 
 def save_model(model, path):
@@ -12,7 +13,15 @@ def load_model(model, path):
 
     # load weight from .pth file.
     if path.endswith('.pth'):
-        model.load_state_dict(torch.load(path))
+        statedict = OrderedDict()
+        for k, v in torch.load(path).items():
+            if k.startswith('model.'):
+                k = '.'.join(k.split('.')[1:])
+
+            statedict[k] = v
+
+        # model.load_state_dict(torch.load(path))
+        model.load_state_dict(statedict)
     # load weight from checkpoint.
     elif path.endswith('.ckpt'):
         checkpoint = torch.load(path)
