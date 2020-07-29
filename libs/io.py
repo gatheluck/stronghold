@@ -1,3 +1,4 @@
+import os
 import copy
 import torch
 import omegaconf
@@ -9,6 +10,9 @@ def save_model(model, path):
 
 
 def load_model(model, path):
+    if not os.path.exists(path):
+        raise FileNotFoundError('path "{path}" does not exist.'.format(path=path))
+
     print('loading model weight from {path}'.format(path=path))
 
     # load weight from .pth file.
