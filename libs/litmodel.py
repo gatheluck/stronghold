@@ -4,6 +4,7 @@ import sys
 base = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../')
 sys.path.append(base)
 
+import shutil
 import hydra
 import omegaconf
 import itertools
@@ -37,15 +38,19 @@ class LitCallback(pytorch_lightning.callbacks.Callback):
         logging.info('Training is successfully ended!')
 
         # save state dict to local.
-        local_save_path = os.path.join(os.getcwd(), 'checkpoint', 'model_weight_final.pth')
+        local_save_path = os.path.join(trainer.weights_save_path, 'model_weight_final.pth')
         save_model(trainer.model, local_save_path)
         logging.info('Trained model is successfully saved to [{path}]'.format(path=local_save_path))
+
+        # copy log info to 'local_save_path'
+        if trainer.default_root_dir != '.':
+            shutil.copytree('.', os.path.join(trainer.default_root_dir, 'log'))
 
         # logging to online logger
         for logger in trainer.logger:
             if isinstance(logger, pytorch_lightning.loggers.comet.CometLogger):
                 # log local log to comet: https://www.comet.ml/docs/python-sdk/Experiment/#experimentlog_asset_folder
-                logger.experiment.log_asset_folder(os.getcwd(), log_file_name=True, recursive=True)
+                logger.experiment.log_asset_folder(trainer.default_root_dir, log_file_name=True, recursive=True)
 
                 # log model to comet: https://www.comet.ml/docs/python-sdk/Experiment/#experimentlog_model
                 if trainer.model is None:

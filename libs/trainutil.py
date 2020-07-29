@@ -42,11 +42,10 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig):
     # log hyperparams
     for logger in loggers:
         logger.log_hyperparams(omegaconf.OmegaConf.to_container(cfg))
-        print(isinstance(logger, pytorch_lightning.loggers.comet.CometLogger))
 
     # this callback function is called by lightning when saving checkpoint
     checkpoint_callback = pytorch_lightning.callbacks.ModelCheckpoint(
-        filepath=os.path.join(os.getcwd(), 'checkpoint', '{epoch}-{val_loss_avg:.2f}'),
+        filepath=os.path.join(cfg.savedir, 'checkpoint', '{epoch}-{val_loss_avg:.2f}'),
         monitor=cfg.checkpoint_monitor,
         save_top_k=1,
         verbose=True,
@@ -70,8 +69,8 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig):
         logger=loggers,
         callbacks=trainer_callbacks,
         checkpoint_callback=checkpoint_callback,
-        default_root_dir='.',
-        weights_save_path='.',
+        default_root_dir=cfg.savedir,
+        weights_save_path=cfg.savedir,
         resume_from_checkpoint=cfg.resume_ckpt_path if 'resume_ckpt_path' in cfg.keys() else None  # if not None, resume from checkpoint
     )
 

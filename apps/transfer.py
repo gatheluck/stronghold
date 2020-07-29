@@ -4,6 +4,7 @@ import sys
 base = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../')
 sys.path.append(base)
 
+import glob 
 import hydra
 import omegaconf
 import logging
@@ -18,11 +19,19 @@ from submodules.ModelBuilder.model_builder import ModelBuilder
 
 @hydra.main(config_path='../conf/transfer.yaml')
 def main(cfg: omegaconf.DictConfig) -> None:
-    assert cfg.weight, 'please specify [weight] option.'
+    exp_id = os.environ.get('EXP_ID')  # get exp_id
+
+    assert cfg.weight or exp_id, 'please specify [weight] option or environmental variable [EXP_ID].'
     assert (cfg.unfreeze_params is not None) or (cfg.unfreeze_level is not None), 'please specify either [unfreeze_params] or [unfreeze_level]'
 
-    # fix relative path because hydra automatically change the current working dirctory.
-    if not cfg.weight.startswith('/'):
+    # adjust cfg.weight and cgf.savepath
+    if exp_id:  # set 'model_weight_final.pth' from 'exp_id'
+        cfg.savedir = os.path.join(hydra.utils.get_original_cwd(), '../logs/{exp_id}/transfer'.format(exp_id=exp_id))
+        os.makedirs(cfg.savedir, exist_ok=True)
+        if not cfg.weight:
+            cfg.weight = os.path.join(hydra.utils.get_original_cwd(), '../logs/{exp_id}/train/checkpoint/model_weight_final.pth'.format(exp_id=exp_id))
+
+    if not cfg.weight.startswith('/'):  # fix relative path because hydra automatically change the current working dirctory.
         cfg.weight = os.path.join(hydra.utils.get_original_cwd(), cfg.weight)
 
     # get keys of nufreeze params. if you want specify more detail, please use [unfreeze_params] option directry
