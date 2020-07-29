@@ -5,3 +5,4 @@ gpus: 1
 prefix: ''
 project_name: null
 hydra_id: null
+savedir: .
