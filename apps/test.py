@@ -192,14 +192,15 @@ def main(cfg: omegaconf.DictConfig):
 
     # replace cfg.savedir
     if exp_id:
-        cfg.savedir = os.path.join(hydra.utils.get_original_cwd(), '../logs/{exp_id}/test/{tester}'.format(exp_id=exp_id, tester=cfg.tester.name))
+        cfg.savedir = os.path.join(hydra.utils.get_original_cwd(), '../logs/ids/{exp_id}/test/{tester}'.format(exp_id=exp_id, tester=cfg.tester.name))
         os.makedirs(cfg.savedir, exist_ok=True)
 
     # fix weight bacause hydra change the current working dir
-    if cfg.weight and (not cfg.weight.startswith('/')):
-        cfg.weight = os.path.join(hydra.utils.get_original_cwd(), cfg.weight)
+    if cfg.weight:
+        if not cfg.weight.startswith('/'):
+            cfg.weight = os.path.join(hydra.utils.get_original_cwd(), cfg.weight)
     else:
-        targetpath = os.path.join(hydra.utils.get_original_cwd(), '../logs/{exp_id}/**/checkpoint/model_weight_final.pth'.format(exp_id=exp_id))
+        targetpath = os.path.join(hydra.utils.get_original_cwd(), '../logs/ids/{exp_id}/**/model_weight_final.pth'.format(exp_id=exp_id))
         candidates = glob.glob(targetpath, recursive=True)
         if len(candidates) != 1:
             raise ValueError('correct weight file not found')

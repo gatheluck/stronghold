@@ -23,7 +23,7 @@ def main(cfg: omegaconf.DictConfig) -> None:
             else cfg.resume_ckpt_path  # absolute path is not affected by hydra.
         )
     elif exp_id:  # set 'cfg.savedir'
-        cfg.savedir = os.path.join(hydra.utils.get_original_cwd(), '../logs/{exp_id}/train'.format(exp_id=exp_id))
+        cfg.savedir = os.path.join(hydra.utils.get_original_cwd(), '../logs/ids/{exp_id}/train'.format(exp_id=exp_id))
         os.makedirs(cfg.savedir, exist_ok=True)
 
     if cfg.hydra_id is None:

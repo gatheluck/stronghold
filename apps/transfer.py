@@ -26,10 +26,10 @@ def main(cfg: omegaconf.DictConfig) -> None:
 
     # adjust cfg.weight and cgf.savepath
     if exp_id:  # set 'model_weight_final.pth' from 'exp_id'
-        cfg.savedir = os.path.join(hydra.utils.get_original_cwd(), '../logs/{exp_id}/transfer'.format(exp_id=exp_id))
+        cfg.savedir = os.path.join(hydra.utils.get_original_cwd(), '../logs/ids/{exp_id}/transfer'.format(exp_id=exp_id))
         os.makedirs(cfg.savedir, exist_ok=True)
         if not cfg.weight:
-            cfg.weight = os.path.join(hydra.utils.get_original_cwd(), '../logs/{exp_id}/train/checkpoint/model_weight_final.pth'.format(exp_id=exp_id))
+            cfg.weight = os.path.join(hydra.utils.get_original_cwd(), '../logs/ids/{exp_id}/train/checkpoint/model_weight_final.pth'.format(exp_id=exp_id))
 
     if not cfg.weight.startswith('/'):  # fix relative path because hydra automatically change the current working dirctory.
         cfg.weight = os.path.join(hydra.utils.get_original_cwd(), cfg.weight)
