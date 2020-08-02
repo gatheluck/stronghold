@@ -7,6 +7,7 @@ sys.path.append(base)
 import shutil
 import hydra
 import omegaconf
+from omegaconf import OmegaConf
 import itertools
 import logging
 import torch
@@ -102,16 +103,20 @@ class LitModel(pytorch_lightning.LightningModule):
 
     def configure_optimizers(self):
         # optimizer part
-        optimizer_name = self.cfg_optimizer.pop('name')
+        _cfg_optimizer = OmegaConf.to_container(self.cfg_optimizer)
+        optimizer_name = _cfg_optimizer.pop('name')
+
         if optimizer_name == 'sgd':
             optimizer_class = torch.optim.SGD
         else:
             raise ValueError
 
-        optimizer = optimizer_class(self.model.parameters(), **self.cfg_optimizer)
+        optimizer = optimizer_class(self.model.parameters(), **_cfg_optimizer)
 
         # scheduler part
-        scheduler_name = self.cfg_scheduler.pop('name')
+        _cfg_scheduler = OmegaConf.to_container(self.cfg_scheduler)
+        scheduler_name = _cfg_scheduler.pop('name')
+
         if scheduler_name == 'steplr':
             scheduler_class = torch.optim.lr_scheduler.StepLR
         elif scheduler_name == 'multisteplr':
@@ -119,7 +124,7 @@ class LitModel(pytorch_lightning.LightningModule):
         else:
             raise ValueError
 
-        scheduler = scheduler_class(optimizer, **self.cfg_scheduler)
+        scheduler = scheduler_class(optimizer, **_cfg_scheduler)
 
         return [optimizer], [scheduler]
 
