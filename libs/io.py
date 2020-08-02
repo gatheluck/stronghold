@@ -37,16 +37,16 @@ def load_model(model, path):
         raise ValueError('path is not supported type of extension.')
 
 
-def log_hyperparams(logger, cfg: omegaconf.DictConfig):
-    """
-    log hyperparameters from omegaconf.
-    because omegaconf is nested, this function is flatten them.
-    """
-    _cfg = copy.deepcopy(cfg)
-    for key, val in cfg.items():
-        if type(val) is omegaconf.dictconfig.DictConfig:
-            dict_for_log = {'.'.join([key, k]): v for k, v in val.items()}  # because cfg is nested dict, the nest info is added to keys.
-            logger.log_hyperparams(dict_for_log)
-            _cfg.pop(key)
-    logger.log_hyperparams(dict(_cfg))
-    del _cfg
+# def log_hyperparams(logger, cfg: omegaconf.DictConfig):
+#     """
+#     log hyperparameters from omegaconf.
+#     because omegaconf is nested, this function is flatten them.
+#     """
+#     _cfg = copy.deepcopy(cfg)
+#     for key, val in cfg.items():
+#         if type(val) is omegaconf.dictconfig.DictConfig:
+#             dict_for_log = {'.'.join([key, k]): v for k, v in val.items()}  # because cfg is nested dict, the nest info is added to keys.
+#             logger.log_hyperparams(dict_for_log)
+#             _cfg.pop(key)
+#     logger.log_hyperparams(dict(_cfg))
+#     del _cfg
