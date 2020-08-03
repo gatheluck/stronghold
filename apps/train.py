@@ -14,6 +14,7 @@ from submodules.ModelBuilder.model_builder import ModelBuilder
 
 @hydra.main(config_path="../conf/train.yaml")
 def main(cfg: omegaconf.DictConfig) -> None:
+    
     exp_id = os.environ.get('EXP_ID')  # get exp_id
 
     if cfg.resume_ckpt_path is not None:  # fix relative path because hydra automatically change the current working dirctory.
@@ -28,6 +29,9 @@ def main(cfg: omegaconf.DictConfig) -> None:
 
     if cfg.hydra_id is None:
         cfg.hydra_id = os.path.basename(os.getcwd())
+
+    # dump omegaconf
+    omegaconf.OmegaConf.save(cfg, os.path.join(cfg.savedir, 'config.yaml'))
 
     # build model and train
     model = ModelBuilder(num_classes=cfg.dataset.num_classes, pretrained=False)[

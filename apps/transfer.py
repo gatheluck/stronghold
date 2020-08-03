@@ -41,6 +41,9 @@ def main(cfg: omegaconf.DictConfig) -> None:
     if cfg.hydra_id is None:
         cfg.hydra_id = os.path.basename(os.getcwd())
 
+    # dump omegaconf
+    omegaconf.OmegaConf.save(cfg, os.path.join(cfg.savedir, 'config.yaml'))
+
     # build model and train
     model = ModelBuilder(num_classes=cfg.source_num_classes, pretrained=False)[cfg.arch]
     load_model(model, cfg.weight)  # load model weight
