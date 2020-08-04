@@ -18,7 +18,7 @@ mlflow ui
 Hyperparam samples:
 | dataset | batch size | ep  | optim | lr | mom | decay | schduler | step | gamma | ref
 ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----
-| CIFAR-10 | 32 | 200 | SGD | 0.1 | 0.9 | 0.0001 | multistep | 100,150 | 0.1 | https://arxiv.org/abs/1908.08016
+| CIFAR-10 | 32 (128) | 200 | SGD | 0.1 | 0.9 | 0.0001 | multistep | 100,150 | 0.1 | https://arxiv.org/abs/1908.08016 (https://arxiv.org/pdf/1512.03385.pdf)
 | ImageNet | 256 | 90 | SGD | 0.1 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | https://arxiv.org/abs/1908.08016
 
 ## Transfer
