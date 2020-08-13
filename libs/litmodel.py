@@ -1,5 +1,6 @@
 import os
 import sys
+import math
 
 base = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../')
 sys.path.append(base)
@@ -23,6 +24,7 @@ from libs.utils import get_epoch_end_log
 from submodules.DatasetBuilder.dataset_builder import DatasetBuilder
 from submodules.ModelBuilder.model_builder import ModelBuilder
 from submodules.PatchGaussian.patch_gaussian import AddPatchGaussian
+from submodules.FourierHeatmap.fhmap.fourier_basis_augmented_dataset import FourierBasisAugmentedDataset
 
 
 class LitCallback(pytorch_lightning.callbacks.Callback):
@@ -40,7 +42,7 @@ class LitCallback(pytorch_lightning.callbacks.Callback):
 
         # save state dict to local.
         local_save_path = os.path.join(trainer.weights_save_path, 'model_weight_final.pth')
-        save_model(trainer.model, local_save_path)
+        save_model(trainer.model.module.model, local_save_path)  # trainer.model.module.model is model in LitModel class
         logging.info('Trained model is successfully saved to [{path}]'.format(path=local_save_path))
 
         # copy log info to 'local_save_path'
@@ -91,6 +93,7 @@ class LitModel(pytorch_lightning.LightningModule):
         self.normalize = self.normalize
         self.dataset_root = os.path.join(hydra.utils.get_original_cwd(), '../data')
         self.log_path = '.'  # hydra automatically change the log place. for detail, please check 'conf/train.yaml'.
+        self.cfg_dataset = cfg.dataset
         self.cfg_optimizer = cfg.optimizer
         self.cfg_scheduler = cfg.scheduler
         self.cfg_augmentation = cfg.augmentation
@@ -208,3 +211,131 @@ class LitModel(pytorch_lightning.LightningModule):
         log_dict = get_epoch_end_log(outputs)
         log_dict['step'] = self.current_epoch
         return {'log': log_dict}
+
+
+class FourierBasisAugmentedLitModel(LitModel):
+    def __init__(self, model, cfg):
+        super().__init__(model, cfg)
+        self.alpha = 0.5
+        self.fc_fba = torch.nn.Linear(64, 496)
+        torch.nn.init.kaiming_normal(self.fc_fba.weight)  # init weight
+
+    def prepare_data(self):
+        if self.cfg_augmentation.name == 'standard':
+            pass
+        elif self.cfg_augmentation.name == 'patch_gaussian':
+            raise ValueError('Fourier basis augmentation should not be used with Patch Gaussian')
+        else:
+            raise NotImplementedError
+
+        train_dataset = self.dataset_builder(train=True, normalize=False)
+        self.train_dataset = FourierBasisAugmentedDataset(train_dataset,
+                                                          input_size=self.cfg_dataset.input_size,
+                                                          mean=self.cfg_dataset.mean,
+                                                          std=self.cfg_dataset.std,
+                                                          h_index=-(math.ceil(self.cfg_dataset.input_size / 2.0) - 1),
+                                                          w_index=-(math.ceil(self.cfg_dataset.input_size / 2.0) - 1),
+                                                          eps=4.0,
+                                                          randomize_index=True,
+                                                          normalize=self.normalize,
+                                                          mode='index')
+
+        val_dataset = self.dataset_builder(train=False, normalize=False)
+        self.val_dataset = FourierBasisAugmentedDataset(val_dataset,
+                                                        input_size=self.cfg_dataset.input_size,
+                                                        mean=self.cfg_dataset.mean,
+                                                        std=self.cfg_dataset.std,
+                                                        h_index=-(math.ceil(self.cfg_dataset.input_size / 2.0) - 1),
+                                                        w_index=-(math.ceil(self.cfg_dataset.input_size / 2.0) - 1),
+                                                        eps=4.0,
+                                                        randomize_index=True,
+                                                        normalize=self.normalize,
+                                                        mode='index')
+
+    def forward(self, x):
+        return self.model(x, return_representation=True)
+
+    def training_step(self, batch, batch_idx):
+        """
+        return loss, dict with metrics for tqdm. this function must be overided.
+        """
+        x, y, y_fba = batch
+
+        # predict class label
+        y_predict, rep = self.forward(x)
+        loss_cls = torch.nn.functional.cross_entropy(y_predict, y) * self.alpha
+
+        # predict fourier basis index
+        y_predict_fba = self.fc_fba(rep)
+        loss_fba = torch.nn.functional.cross_entropy(y_predict_fba, y_fba) * (1.0 - self.alpha)
+
+        loss = loss_cls + loss_fba
+
+        stdacc1_cls, stdacc5_cls = accuracy(y_predict, y, topk=(1, 5))
+        stdacc1_fba, stdacc5_fba = accuracy(y_predict_fba, y_fba, topk=(1, 5))
+
+        log = {'train_loss': loss,
+               'train_loss_cls': loss_cls,
+               'train_loss_fba': loss_fba,
+               'train_std_acc1': stdacc1_cls,
+               'train_std_acc5': stdacc5_cls,
+               'train_std_acc1_fba': stdacc1_fba,
+               'train_std_acc5_fba': stdacc5_fba}
+        return {'loss': loss, 'log': log}
+
+    def validation_step(self, batch, batch_idx):
+        """
+        return loss, dict with metrics for tqdm. this function must be overided.
+        """
+        x, y, y_fba = batch
+
+        # predict class label
+        y_predict, rep = self.forward(x)
+        loss_cls = torch.nn.functional.cross_entropy(y_predict, y) * self.alpha
+
+        # predict fourier basis index
+        y_predict_fba = self.fc_fba(rep)
+        loss_fba = torch.nn.functional.cross_entropy(y_predict_fba, y_fba) * (1.0 - self.alpha)
+
+        loss = loss_cls + loss_fba
+
+        stdacc1_cls, stdacc5_cls = accuracy(y_predict, y, topk=(1, 5))
+        stdacc1_fba, stdacc5_fba = accuracy(y_predict_fba, y_fba, topk=(1, 5))
+
+        log = {'val_loss': loss,
+               'val_loss_cls': loss_cls,
+               'val_loss_fba': loss_fba,
+               'val_std_acc1': stdacc1_cls,
+               'val_std_acc5': stdacc5_cls,
+               'val_std_acc1_fba': stdacc1_fba,
+               'val_std_acc5_fba': stdacc5_fba}
+        return log
+
+    def test_step(self, batch, batch_idx):
+        """
+        return loss, dict with metrics for tqdm. this function must be overided.
+        """
+        x, y, y_fba = batch
+
+        # predict class label
+        y_predict, rep = self.forward(x)
+        loss_cls = torch.nn.functional.cross_entropy(y_predict, y) * self.alpha
+
+        # predict fourier basis index
+        y_predict_fba = self.fc_fba(rep)
+        loss_fba = torch.nn.functional.cross_entropy(y_predict_fba, y_fba) * (1.0 - self.alpha)
+
+        loss = loss_cls + loss_fba
+
+        stdacc1_cls, stdacc5_cls = accuracy(y_predict, y, topk=(1, 5))
+        stdacc1_fba, stdacc5_fba = accuracy(y_predict_fba, y_fba, topk=(1, 5))
+
+        log = {'val_loss': loss,
+               'val_loss_cls': loss_cls,
+               'val_loss_fba': loss_fba,
+               'val_std_acc1': stdacc1_cls,
+               'val_std_acc5': stdacc5_cls,
+               'val_std_acc1_fba': stdacc1_fba,
+               'val_std_acc5_fba': stdacc5_fba}
+
+        return log

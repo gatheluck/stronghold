@@ -12,7 +12,7 @@ import torch
 import pytorch_lightning
 
 from libs.io import save_model
-from libs.litmodel import LitModel
+from libs.litmodel import LitModel, FourierBasisAugmentedLitModel
 from libs.litmodel import LitCallback
 from libs.utils import cfg_to_tags
 
@@ -75,8 +75,9 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig):
     )
 
     # train lightning model
-    litmodel = LitModel(model, cfg)
+    litmodel = LitModel(model, cfg) if not cfg.use_fourier_basis_aug else FourierBasisAugmentedLitModel(model, cfg)
     trainer.fit(litmodel)
+
     # if outname:
     #     save_model(litmodel.model, os.path.join(os.getcwd(), 'checkpoint', outname))  # manual backup of final model weight.
     # IMPORTANT: above save process is move to [LitCallback] class in [litmodel.py].
