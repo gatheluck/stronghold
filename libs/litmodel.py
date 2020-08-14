@@ -20,6 +20,7 @@ from libs.io import save_model
 from libs.io import load_model
 from libs.utils import parse_args
 from libs.utils import get_epoch_end_log
+from libs.utils import unnormalize
 
 from submodules.DatasetBuilder.dataset_builder import DatasetBuilder
 from submodules.ModelBuilder.model_builder import ModelBuilder
@@ -157,6 +158,9 @@ class LitModel(pytorch_lightning.LightningModule):
         return loss, dict with metrics for tqdm. this function must be overided.
         """
         x, y = batch
+        if batch_idx == 1:
+            self._save_img(x)
+
         y_predict = self.forward(x)
         loss = torch.nn.functional.cross_entropy(y_predict, y)
         stdacc1, stdacc5 = accuracy(y_predict, y, topk=(1, 5))
@@ -211,6 +215,10 @@ class LitModel(pytorch_lightning.LightningModule):
         log_dict = get_epoch_end_log(outputs)
         log_dict['step'] = self.current_epoch
         return {'log': log_dict}
+
+    def _save_img(self, x, num_sample: int = 32, filepath: str = 'training_img_sample.png'):
+        x_unnormalize = unnormalize(x[0:num_sample, :, :, :], mean=self.dataset_builder.mean, std=self.dataset_builder.std, device='cuda')
+        torchvision.utils.save_image(x_unnormalize, filepath)
 
 
 class FourierBasisAugmentedLitModel(LitModel):
@@ -271,6 +279,8 @@ class FourierBasisAugmentedLitModel(LitModel):
         return loss, dict with metrics for tqdm. this function must be overided.
         """
         x, y, y_fba = batch
+        if batch_idx == 1:
+            self._save_img(x)
 
         # predict class label
         y_predict, rep = self.forward(x)

@@ -144,6 +144,30 @@ def get_time_stamp(mode='long'):
     return time_stamp
 
 
+def normalize(x, mean, std, device: str):
+    assert len(x.size()) == 4, "shape of x should be [b,c,h,w]"
+    assert len(mean) == len(std), "channel size should be same."
+    assert x.size(1) == len(mean), "channel size of x and mean/std should be same."
+
+    mean, std = (
+        torch.tensor(mean, dtype=torch.float32).to(device),
+        torch.tensor(std, dtype=torch.float32).to(device),
+    )
+    return x.sub(mean[None, :, None, None]).div(std[None, :, None, None])
+
+
+def unnormalize(x, mean, std, device: str):
+    assert len(x.size()) == 4, "shape of x should be [b,c,h,w]"
+    assert len(mean) == len(std), "channel size should be same."
+    assert x.size(1) == len(mean), "channel size of x and mean/std should be same."
+
+    mean, std = (
+        torch.tensor(mean, dtype=torch.float32).to(device),
+        torch.tensor(std, dtype=torch.float32).to(device),
+    )
+    return x.mul(std[None, :, None, None]).add(mean[None, :, None, None])
+
+
 if __name__ == '__main__':
     import torchvision
 
