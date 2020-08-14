@@ -1,0 +1,6 @@
+litmodel: 
+  name: fba
+  weight_fba: 0.5
+  dim_rep: 64
+  dim_fba: 496
+  eps_fba: 4.0
