@@ -214,6 +214,9 @@ class LitModel(pytorch_lightning.LightningModule):
 
 
 class FourierBasisAugmentedLitModel(LitModel):
+    """
+    Wrapper class for Lightning Model. Add Fourier basis to dataset at runtime.
+    """
     def __init__(self, model, cfg):
         super().__init__(model, cfg)
         self.alpha = 0.5
@@ -253,7 +256,7 @@ class FourierBasisAugmentedLitModel(LitModel):
                                                         mode='index')
 
     def forward(self, x):
-        return self.model(x, return_representation=True)
+        return self.model(x, return_rep=True)
 
     def training_step(self, batch, batch_idx):
         """
