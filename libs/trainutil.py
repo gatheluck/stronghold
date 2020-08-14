@@ -75,7 +75,13 @@ def lightning_train(model: torch.nn.Module, cfg: omegaconf.DictConfig):
     )
 
     # train lightning model
-    litmodel = LitModel(model, cfg) if not cfg.use_fourier_basis_aug else FourierBasisAugmentedLitModel(model, cfg)
+    if cfg.litmodel.name == 'std':
+        litmodel = LitModel(model, cfg)
+    elif cfg.litmodel.name == 'fba':
+        litmodel = FourierBasisAugmentedLitModel(model, cfg, **cfg.litmodel)
+    else:
+        raise NotImplementedError
+
     trainer.fit(litmodel)
 
     # if outname:

@@ -46,8 +46,8 @@ class LitCallback(pytorch_lightning.callbacks.Callback):
         logging.info('Trained model is successfully saved to [{path}]'.format(path=local_save_path))
 
         # copy log info to 'local_save_path'
-        if trainer.default_root_dir != '.':
-            shutil.copytree('.', os.path.join(trainer.default_root_dir, 'log'))
+        # if trainer.default_root_dir != '.':
+        #     shutil.copytree('.', os.path.join(trainer.default_root_dir, 'log'))
 
         # logging to online logger
         for logger in trainer.logger:
@@ -217,10 +217,18 @@ class FourierBasisAugmentedLitModel(LitModel):
     """
     Wrapper class for Lightning Model. Add Fourier basis to dataset at runtime.
     """
-    def __init__(self, model, cfg):
+    def __init__(self, model, cfg, **kwargs):
         super().__init__(model, cfg)
-        self.alpha = 0.5
-        self.fc_fba = torch.nn.Linear(64, 496)
+
+        assert 0.0 <= kwargs['weight_fba'] <= 1.0
+        assert kwargs['dim_rep'] > 0
+        assert kwargs['dim_fba'] > 0
+        assert kwargs['eps_fba'] > 0
+
+        self.weight_fba = kwargs['weight_fba']
+        self.fc_fba = torch.nn.Linear(kwargs['dim_rep'], kwargs['dim_fba'])
+        self.eps_fba = kwargs['eps_fba']
+
         torch.nn.init.kaiming_normal(self.fc_fba.weight)  # init weight
 
     def prepare_data(self):
@@ -238,7 +246,7 @@ class FourierBasisAugmentedLitModel(LitModel):
                                                           std=self.cfg_dataset.std,
                                                           h_index=-(math.ceil(self.cfg_dataset.input_size / 2.0) - 1),
                                                           w_index=-(math.ceil(self.cfg_dataset.input_size / 2.0) - 1),
-                                                          eps=4.0,
+                                                          eps=self.eps_fba,
                                                           randomize_index=True,
                                                           normalize=self.normalize,
                                                           mode='index')
@@ -250,7 +258,7 @@ class FourierBasisAugmentedLitModel(LitModel):
                                                         std=self.cfg_dataset.std,
                                                         h_index=-(math.ceil(self.cfg_dataset.input_size / 2.0) - 1),
                                                         w_index=-(math.ceil(self.cfg_dataset.input_size / 2.0) - 1),
-                                                        eps=4.0,
+                                                        eps=self.eps_fba,
                                                         randomize_index=True,
                                                         normalize=self.normalize,
                                                         mode='index')
@@ -266,11 +274,11 @@ class FourierBasisAugmentedLitModel(LitModel):
 
         # predict class label
         y_predict, rep = self.forward(x)
-        loss_cls = torch.nn.functional.cross_entropy(y_predict, y) * self.alpha
+        loss_cls = torch.nn.functional.cross_entropy(y_predict, y) * (1.0 - self.weight_fba)
 
         # predict fourier basis index
         y_predict_fba = self.fc_fba(rep)
-        loss_fba = torch.nn.functional.cross_entropy(y_predict_fba, y_fba) * (1.0 - self.alpha)
+        loss_fba = torch.nn.functional.cross_entropy(y_predict_fba, y_fba) * self.weight_fba
 
         loss = loss_cls + loss_fba
 
@@ -294,11 +302,11 @@ class FourierBasisAugmentedLitModel(LitModel):
 
         # predict class label
         y_predict, rep = self.forward(x)
-        loss_cls = torch.nn.functional.cross_entropy(y_predict, y) * self.alpha
+        loss_cls = torch.nn.functional.cross_entropy(y_predict, y) * (1.0 - self.weight_fba)
 
         # predict fourier basis index
         y_predict_fba = self.fc_fba(rep)
-        loss_fba = torch.nn.functional.cross_entropy(y_predict_fba, y_fba) * (1.0 - self.alpha)
+        loss_fba = torch.nn.functional.cross_entropy(y_predict_fba, y_fba) * self.weight_fba
 
         loss = loss_cls + loss_fba
 
@@ -322,11 +330,11 @@ class FourierBasisAugmentedLitModel(LitModel):
 
         # predict class label
         y_predict, rep = self.forward(x)
-        loss_cls = torch.nn.functional.cross_entropy(y_predict, y) * self.alpha
+        loss_cls = torch.nn.functional.cross_entropy(y_predict, y) * (1.0 - self.weight_fba)
 
         # predict fourier basis index
         y_predict_fba = self.fc_fba(rep)
-        loss_fba = torch.nn.functional.cross_entropy(y_predict_fba, y_fba) * (1.0 - self.alpha)
+        loss_fba = torch.nn.functional.cross_entropy(y_predict_fba, y_fba) * self.weight_fba
 
         loss = loss_cls + loss_fba
 

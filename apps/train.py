@@ -34,9 +34,7 @@ def main(cfg: omegaconf.DictConfig) -> None:
     omegaconf.OmegaConf.save(cfg, os.path.join(cfg.savedir, 'config.yaml'))
 
     # build model and train
-    model = ModelBuilder(num_classes=cfg.dataset.num_classes, num_second_classes=cfg.num_second_classes, pretrained=False)[
-        cfg.arch
-    ]
+    model = ModelBuilder(num_classes=cfg.dataset.num_classes, pretrained=False)[cfg.arch]
     lightning_train(model, cfg)
 
     logging.info('[train.py] is successfully ended.')
