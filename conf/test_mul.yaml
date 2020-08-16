@@ -1,0 +1,17 @@
+defaults:
+  - misc/misc_shared
+  - misc/misc_test_mul
+  - dataset: cifar10
+
+hydra:
+  job:
+    config:
+      override_dirname:
+        kv_sep: ':'
+        item_sep: '-'
+        exclude_keys: ['weight']
+  run:
+    dir: ../logs/${hydra.job.name}/${now:%Y-%m-%d_%H-%M-%S}
+  sweep:
+    dir: ../logs/${hydra.job.name}/${now:%Y-%m-%d_%H-%M-%S}
+    subdir: ${hydra.job.override_dirname}_${hydra.job.num}
