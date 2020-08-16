@@ -231,7 +231,7 @@ class FourierBasisAugmentedLitModel(LitModel):
         assert 0.0 <= kwargs['weight_fba'] <= 1.0
         assert kwargs['dim_rep'] > 0
         assert kwargs['dim_fba'] > 0
-        assert kwargs['eps_fba'] > 0
+        assert kwargs['eps_fba'] >= 0
 
         self.weight_fba = kwargs['weight_fba']
         self.fc_fba = torch.nn.Linear(kwargs['dim_rep'], kwargs['dim_fba'])
