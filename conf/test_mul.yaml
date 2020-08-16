@@ -1,6 +1,7 @@
 defaults:
   - misc/misc_shared
   - misc/misc_test_mul
+  - attack: pgd
   - dataset: cifar10
 
 hydra:

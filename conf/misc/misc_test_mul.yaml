@@ -1,2 +1,6 @@
+script: test_mul
+batch_size: 512
 targetdir: null
 copy_needle: true
+device: cuda
+logger_path: 'local_log.csv'

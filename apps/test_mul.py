@@ -1,10 +1,19 @@
 import os
 import sys
+
+base = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../")
+sys.path.append(base)
+
+import math
 import glob
 import shutil
 import hydra
 import omegaconf
 import logging
+
+from libs.io import load_model
+from apps.test import eval_accuracy
+from submodules.ModelBuilder.model_builder import ModelBuilder
 
 
 def check_target_mode(targetpath, targetdir, mode_candidates: list = ['train', 'transfer']) -> str:
@@ -55,24 +64,41 @@ def main(cfg: omegaconf.DictConfig):
 
     # find targets
     needles = find_needles(cfg.targetdir)
-
     if len(needles) == 0:
         logger.error('No targets are found.')
     else:
         logger.info('{} needles are found.'.format(len(needles)))
 
+    # eval actual value of step_size
+    cfg.attack.step_size = eval(cfg.attack.step_size)
+
     for needle in needles:
+        logger.info('---------------------------')
         logger.info('run test: {}'.format(needle))
 
         # create output dir and copy
         mode, dirname = check_target_mode(needle, cfg.targetdir)
-        os.makedirs(os.path.join(dirname, 'test'), exist_ok=True)
+        test_savedir = os.path.join(dirname, 'test')
+        os.makedirs(test_savedir, exist_ok=True)
         if cfg.copy_needle:
             shutil.copytree(os.path.join(cfg.targetdir, dirname), os.path.join(dirname, mode))
 
+        # dump omegaconf for viewer
+        omegaconf.OmegaConf.save(cfg, os.path.join(test_savedir, 'config.yaml'))
+
+        # build and load model
+        model = ModelBuilder(num_classes=cfg.dataset.num_classes, pretrained=False)[cfg.arch]
+        try:
+            logger.info("loading weight from [{weight}]".format(weight=needle))
+            load_model(model, needle)  # load model weight
+            model = model.to(cfg.device)
+            model.eval()
+        except ValueError:
+            logger.info("can not load weight from {weight}".format(weight=needle))
+            raise ValueError("model loading is failed")
+
         # run test
-
-
+        eval_accuracy(model, logger, cfg, online_logger=None, savedir=os.path.join(test_savedir, 'acc'))
 
 
 if __name__ == '__main__':

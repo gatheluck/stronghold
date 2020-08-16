@@ -39,10 +39,19 @@ SUPPORTED_TESTER = "acc fourier spacial corruption sensitivity layer".split()
 # - corruption: evaluate corruption accuracy
 
 
-def eval_accuracy(model, hydra_logger, cfg, online_logger=None):
+def eval_accuracy(model, hydra_logger, cfg, online_logger=None, savedir=None):
     """
     evaluate satandard and robust accuracy of the model
     """
+    # create savedir
+    if savedir is None:
+        savedir = cfg.savedir
+
+    if os.path.exists(savedir):
+        return None
+    else:
+        os.makedirs(savedir, exist_ok=True)
+
     # build
     dataset_builder = DatasetBuilder(
         root_path=os.path.join(hydra.utils.get_original_cwd(), "../data"), **cfg.dataset
@@ -62,8 +71,8 @@ def eval_accuracy(model, hydra_logger, cfg, online_logger=None):
     metrics["advacc1"] = list()
     metrics["advacc5"] = list()
 
-    with tqdm.tqdm(enumerate(val_loader)) as pbar:
-        for i, (x, y) in pbar:
+    with tqdm.tqdm(total=len(val_loader), ncols=80) as pbar:
+        for i, (x, y) in enumerate(val_loader):
             x, y = x.to(cfg.device), y.to(cfg.device)
 
             attacker = AttackBuilder("pgd")(
@@ -92,6 +101,7 @@ def eval_accuracy(model, hydra_logger, cfg, online_logger=None):
                     std="{}".format(stdacc1), adv="{}".format(advacc1)
                 )
             )
+            pbar.update()
 
             # save first 8 samples
             if i == 0:
@@ -99,14 +109,14 @@ def eval_accuracy(model, hydra_logger, cfg, online_logger=None):
                     [denormalizer(x[0:8, :, :, :]), denormalizer(x_adv[0:8, :, :, :])],
                     dim=2,
                 )
-                torchvision.utils.save_image(x_for_save, os.path.join(cfg.savedir, "pgd_test.png"))
+                torchvision.utils.save_image(x_for_save, os.path.join(savedir, "pgd_test.png"))
 
     # take average over metrics
     for k, v_list in metrics.items():
         metrics[k] = sum(v_list) / float(len(v_list))
 
     # local logger for csv file
-    local_logger = Logger(os.path.join(cfg.savedir, cfg.logger_path), mode="test")
+    local_logger = Logger(os.path.join(savedir, cfg.logger_path), mode="test")
     local_logger.log(metrics)
 
     # hydra logger
