@@ -124,20 +124,34 @@ def eval_accuracy(model, hydra_logger, cfg, online_logger=None, savedir=None):
         hydra_logger.info("{k}: {v}".format(k=k, v=v))
 
 
-def eval_corruption_accuracy(model, cfg, online_logger=None):
+def eval_corruption_accuracy(model, cfg, online_logger=None, valid_datasets: list = ['cifar10c'], savedir=None):
     """
     evaluate corruption accuracy.
     currntly only valid for cifar10c.
     """
+    _CORRUPTIONS = ['gaussian_noise', 'shot_noise', 'speckle_noise', 'impulse_noise', 'defocus_blur', 'gaussian_blur', 'motion_blur', 'zoom_blur', 'snow', 'fog', 'brightness', 'contrast', 'elastic_transform', 'pixelate', 'jpeg_compression', 'spatter', 'saturate', 'frost']
+
+    if cfg.dataset.name in [dataset[:-1] for dataset in valid_datasets]:
+        cfg.dataset.name = cfg.dataset.name + 'c'
+
     assert (
         cfg.dataset.name in "cifar10c".split()
     ), "this dataset is not supported to evaluate corruption."
+
+    # create savedir
+    if savedir is None:
+        savedir = cfg.savedir
+
+    if os.path.exists(savedir):
+        return None
+    else:
+        os.makedirs(savedir, exist_ok=True)
 
     dataset_builder = DatasetBuilder(
         root_path=os.path.join(hydra.utils.get_original_cwd(), "../data"), **cfg.dataset
     )
     evaluate_corruption_accuracy(
-        model, dataset_builder, log_dir=cfg.savedir, corruptions=cfg.dataset.corruptions, **cfg
+        model, dataset_builder, log_dir=savedir, corruptions=_CORRUPTIONS, num_samples=-1, **cfg
     )
 
 

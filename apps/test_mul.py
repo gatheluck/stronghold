@@ -12,7 +12,7 @@ import omegaconf
 import logging
 
 from libs.io import load_model
-from apps.test import eval_accuracy
+from apps.test import eval_accuracy, eval_corruption_accuracy
 from submodules.ModelBuilder.model_builder import ModelBuilder
 
 
@@ -99,6 +99,7 @@ def main(cfg: omegaconf.DictConfig):
 
         # run test
         eval_accuracy(model, logger, cfg, online_logger=None, savedir=os.path.join(test_savedir, 'acc'))
+        eval_corruption_accuracy(model, cfg, savedir=os.path.join(test_savedir, 'rob'))
 
 
 if __name__ == '__main__':
