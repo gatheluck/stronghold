@@ -243,11 +243,11 @@ class FourierBasisAugmentedLitModel(LitModel):
         if self.cfg_augmentation.name == 'standard':
             pass
         elif self.cfg_augmentation.name == 'patch_gaussian':
-            raise ValueError('Fourier basis augmentation should not be used with Patch Gaussian')
+            train_optional_transform = [AddPatchGaussian(**self.cfg_augmentation)]
         else:
             raise NotImplementedError
 
-        train_dataset = self.dataset_builder(train=True, normalize=False)
+        train_dataset = self.dataset_builder(train=True, normalize=False, optional_transform=train_optional_transform)
         self.train_dataset = FourierBasisAugmentedDataset(train_dataset,
                                                           input_size=self.cfg_dataset.input_size,
                                                           mean=self.cfg_dataset.mean,
