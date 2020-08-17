@@ -217,7 +217,7 @@ def convert_to_dataframe(target_dir):
     if not os.path.exists(target_dir):
         raise FileNotFoundError('target_dir: "{}" is not found'.format(target_dir))
 
-    test_paths = glob.glob(os.path.join(target_dir, "**", "test"), recursive=True)
+    test_paths = sorted(glob.glob(os.path.join(target_dir, "**", "test"), recursive=True))
     df = pd.DataFrame()
 
     for test_path in test_paths:
