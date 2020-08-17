@@ -98,7 +98,7 @@ def main(cfg: omegaconf.DictConfig):
             raise ValueError("model loading is failed")
 
         # run test
-        eval_accuracy(model, logger, cfg, online_logger=None, savedir=os.path.join(test_savedir, 'acc'))
+        # eval_accuracy(model, logger, cfg, online_logger=None, savedir=os.path.join(test_savedir, 'acc'))
         eval_corruption_accuracy(model, cfg, savedir=os.path.join(test_savedir, 'rob'))
 
 

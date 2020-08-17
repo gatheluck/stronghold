@@ -151,7 +151,7 @@ def eval_corruption_accuracy(model, cfg, online_logger=None, valid_datasets: lis
         root_path=os.path.join(hydra.utils.get_original_cwd(), "../data"), **cfg.dataset
     )
     evaluate_corruption_accuracy(
-        model, dataset_builder, log_dir=savedir, corruptions=_CORRUPTIONS, num_samples=-1, **cfg
+        model, dataset_builder, log_dir=savedir, corruptions=_CORRUPTIONS, **cfg
     )
 
 
