@@ -155,15 +155,24 @@ def eval_corruption_accuracy(model, cfg, online_logger=None, valid_datasets: lis
     )
 
 
-def eval_fourier_heatmap(model, cfg, online_logger=None):
+def eval_fourier_heatmap(model, cfg, online_logger=None, savedir=None):
     """
     create fourier heatmap.
     main algorithm is written in https://github.com/gatheluck/FourierHeatmap
     """
+    # create savedir
+    if savedir is None:
+        savedir = cfg.savedir
+
+    if os.path.exists(savedir):
+        return None
+    else:
+        os.makedirs(savedir, exist_ok=True)
+
     dataset_builder = DatasetBuilder(
         root_path=os.path.join(hydra.utils.get_original_cwd(), "../data"), **cfg.dataset
     )
-    create_fourier_heatmap(model, dataset_builder, norm_type='linf', log_dir=cfg.savedir, **cfg.tester)
+    create_fourier_heatmap(model, dataset_builder, norm_type='linf', log_dir=savedir, **cfg.tester)
 
 
 def eval_spacial_sensitivity(model, cfg, online_logger=None):

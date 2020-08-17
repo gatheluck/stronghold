@@ -4,3 +4,4 @@ targetdir: null
 copy_needle: true
 device: cuda
 logger_path: 'local_log.csv'
+num_samples: -1
