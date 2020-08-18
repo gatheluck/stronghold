@@ -12,8 +12,30 @@ import omegaconf
 import logging
 
 from libs.io import load_model
-from apps.test import eval_accuracy, eval_corruption_accuracy, eval_fourier_heatmap
+from apps.test import eval_accuracy, eval_corruption_accuracy
+from submodules.FourierHeatmap.fhmap.fourier_heatmap import create_fourier_heatmap
 from submodules.ModelBuilder.model_builder import ModelBuilder
+from submodules.DatasetBuilder.dataset_builder import DatasetBuilder
+
+
+def eval_fourier_heatmap(model, cfg, online_logger=None, savedir=None):
+    """
+    create fourier heatmap.
+    main algorithm is written in https://github.com/gatheluck/FourierHeatmap
+    """
+    # create savedir
+    if savedir is None:
+        savedir = cfg.savedir
+
+    if os.path.exists(savedir):
+        return None
+    else:
+        os.makedirs(savedir, exist_ok=True)
+
+    dataset_builder = DatasetBuilder(
+        root_path=os.path.join(hydra.utils.get_original_cwd(), "../data"), **cfg.dataset
+    )
+    create_fourier_heatmap(model, dataset_builder, norm_type='linf', log_dir=savedir, eps=4.0, **cfg)
 
 
 def check_target_mode(targetpath, targetdir, mode_candidates: list = ['train', 'transfer']) -> str:
