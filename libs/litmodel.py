@@ -241,7 +241,7 @@ class FourierBasisAugmentedLitModel(LitModel):
 
     def prepare_data(self):
         if self.cfg_augmentation.name == 'standard':
-            pass
+            train_optional_transform = []
         elif self.cfg_augmentation.name == 'patch_gaussian':
             train_optional_transform = [AddPatchGaussian(**self.cfg_augmentation)]
         else:
