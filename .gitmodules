@@ -16,3 +16,6 @@
 [submodule "submodules/PatchGaussian"]
 	path = submodules/PatchGaussian
 	url = https://github.com/gatheluck/PatchGaussian.git
+[submodule "submodules/DataAugs"]
+	path = submodules/DataAugs
+	url = https://github.com/gatheluck/DataAugs.git
