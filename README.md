@@ -21,6 +21,20 @@ Hyperparam samples:
 | CIFAR-10 | 32 (128) | 200 | SGD | 0.1 | 0.9 | 0.0001 | multistep | 100,150 | 0.1 | https://arxiv.org/abs/1908.08016 (https://arxiv.org/pdf/1512.03385.pdf)
 | ImageNet | 256 | 90 | SGD | 0.1 | 0.9 | 0.0001 | multistep | 30,60,80 | 0.1 | https://arxiv.org/abs/1908.08016
 
+### Use online logger
+If you want to use online logger like comet.ml or wandb, please export environmental variable `ONLINE_LOGGER_API_KEY`. (Currently, only Comet.ml is supported.)
+
+```
+export ONLINE_LOGGER_API_KEY=${YOUR_API_KEY}
+```
+
+You also be able to use `project_name`  option to specify, project name of online logger like following.
+
+```
+python train project_name=${HOGE}
+```
+
+
 ## Transfer
 
 Example code:
