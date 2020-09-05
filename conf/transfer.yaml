@@ -6,6 +6,7 @@ defaults:
   - optimizer: sgd
   - scheduler: multisteplr
   - augmentation: standard
+  - litmodel: std
 
 hydra:
   job:
