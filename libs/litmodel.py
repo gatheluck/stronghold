@@ -26,7 +26,7 @@ from submodules.DatasetBuilder.dataset_builder import DatasetBuilder
 from submodules.ModelBuilder.model_builder import ModelBuilder
 from submodules.PatchGaussian.patch_gaussian import AddPatchGaussian
 from submodules.FourierHeatmap.fhmap.fourier_basis_augmented_dataset import FourierBasisAugmentedDataset
-from submodules.DataAugs.daugs.noiseaug import AddSmoothGaussian
+from submodules.DataAugs.daugs.noiseaug import AddSmoothGaussian, AddPatchFourier, AddSmoothFourier
 
 
 class LitCallback(pytorch_lightning.callbacks.Callback):
@@ -140,10 +140,16 @@ class LitModel(pytorch_lightning.LightningModule):
 
         if self.cfg_augmentation.name == 'standard':
             train_optional_transform = []
+        # Gaussian based augmentation
         elif self.cfg_augmentation.name == 'patch_gaussian':
             train_optional_transform = [AddPatchGaussian(**self.cfg_augmentation)]
         elif self.cfg_augmentation.name == 'smooth_gaussian':
             train_optional_transform = [AddSmoothGaussian(**self.cfg_augmentation)]
+        # Fourier based augmentation
+        elif self.cfg_augmentation.name == 'patch_fourier':
+            train_optional_transform = [AddPatchFourier(**self.cfg_augmentation)]
+        elif self.cfg_augmentation.name == 'smooth_fourier':
+            train_optional_transform = [AddSmoothFourier(**self.cfg_augmentation)]
         else:
             raise NotImplementedError
 
