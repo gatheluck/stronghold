@@ -1,6 +1,7 @@
 import os
 import sys
 import math
+import random
 
 base = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../')
 sys.path.append(base)
@@ -27,6 +28,7 @@ from submodules.ModelBuilder.model_builder import ModelBuilder
 from submodules.PatchGaussian.patch_gaussian import AddPatchGaussian
 from submodules.FourierHeatmap.fhmap.fourier_basis_augmented_dataset import FourierBasisAugmentedDataset
 from submodules.DataAugs.daugs.noiseaug import AddSmoothGaussian, AddPatchFourier, AddSmoothFourier
+from submodules.DataAugs.daugs.mixaug import Mixup, Cutmix, SmoothMix
 
 
 class LitCallback(pytorch_lightning.callbacks.Callback):
@@ -99,6 +101,7 @@ class LitModel(pytorch_lightning.LightningModule):
         self.cfg_optimizer = cfg.optimizer
         self.cfg_scheduler = cfg.scheduler
         self.cfg_augmentation = cfg.augmentation
+        self.cfg_mixer = cfg.mixer
 
         # initialize dir
         os.makedirs(self.dataset_root, exist_ok=True)
@@ -166,13 +169,34 @@ class LitModel(pytorch_lightning.LightningModule):
         """
         return loss, dict with metrics for tqdm. this function must be overided.
         """
-        x, y = batch
-        if batch_idx == 1:
-            self._save_img(x)
+        # set mixer
+        if self.cfg_mixer.name == 'std':
+            mixer = None
+        elif self.cfg_mixer.name == 'mixup':
+            mixer = Mixup(**self.cfg_mixer)
+        elif self.cfg_mixer.name == 'cutmix':
+            mixer = Cutmix(**self.cfg_mixer)
+        elif self.cfg_mixer.name == 'smoothmix':
+            mixer = SmoothMix(**self.cfg_mixer)
+        else:
+            raise NotImplementedError()
 
-        y_predict = self.forward(x)
-        loss = torch.nn.functional.cross_entropy(y_predict, y)
-        stdacc1, stdacc5 = accuracy(y_predict, y, topk=(1, 5))
+        # forward
+        x, y = batch
+        if self.cfg_mixer.name == 'std':
+            y_predict = self.forward(x)
+            loss = torch.nn.functional.cross_entropy(y_predict, y)
+            stdacc1, stdacc5 = accuracy(y_predict, y, topk=(1, 5))
+        else:
+            loss, retdict = mixer(self.model, x, y)
+            stdacc1, stdacc5 = torch.tensor([0.0]).float(), torch.tensor([0.0]).float()
+
+        # save sample training data
+        if batch_idx == 1:
+            # torchvision.utils.save_image(x.detach(), fp='x.png')
+            # torchvision.utils.save_image(retdict['x_mix'].detach(), fp='x_mix_orig.png')
+            # self._save_img(x.detach(), filepath='input_img_sample.png')
+            self._save_img(x.detach()) if self.cfg_mixer.name == 'std' else self._save_img(retdict['x_mix'].detach(), filepath='training_img_sample.png')
 
         log = {'train_loss': loss,
                'train_std_acc1': stdacc1,
