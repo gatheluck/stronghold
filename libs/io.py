@@ -1,4 +1,6 @@
 import os
+import logging
+import re
 import copy
 import torch
 import omegaconf
@@ -12,17 +14,18 @@ def save_model(model, path):
 def load_model(model, path):
     if not os.path.exists(path):
         raise FileNotFoundError('path "{path}" does not exist.'.format(path=path))
-
-    print('loading model weight from {path}'.format(path=path))
+    logging.info('loading model weight from {path}'.format(path=path))
 
     # load weight from .pth file.
     if path.endswith('.pth'):
-        statedict = OrderedDict()
-        for k, v in torch.load(path).items():
-            if k.startswith('model.'):
-                k = '.'.join(k.split('.')[1:])
+        weight = torch.load(path)
+        statedict = OrderedDict([(re.sub('^module.', '', k), v) for k, v in weight.items()])
+        # statedict = OrderedDict()
+        # for k, v in torch.load(path).items():
+        #     if k.startswith('model.'):
+        #         k = '.'.join(k.split('.')[1:])
 
-            statedict[k] = v
+        #     statedict[k] = v
 
         # model.load_state_dict(torch.load(path))
         model.load_state_dict(statedict)
