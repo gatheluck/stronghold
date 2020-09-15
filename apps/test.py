@@ -47,10 +47,11 @@ def eval_accuracy(model, hydra_logger, cfg, online_logger=None, savedir=None):
     if savedir is None:
         savedir = cfg.savedir
 
-    if os.path.exists(savedir):
-        return None
-    else:
-        os.makedirs(savedir, exist_ok=True)
+    if savedir != '.':
+        if os.path.exists(savedir):
+            return None
+        else:
+            os.makedirs(savedir, exist_ok=True)
 
     # build
     dataset_builder = DatasetBuilder(
@@ -164,10 +165,11 @@ def eval_fourier_heatmap(model, cfg, online_logger=None, savedir=None):
     if savedir is None:
         savedir = cfg.savedir
 
-    if os.path.exists(savedir):
-        return None
-    else:
-        os.makedirs(savedir, exist_ok=True)
+    if savedir != '.':
+        if os.path.exists(savedir):
+            return None
+        else:
+            os.makedirs(savedir, exist_ok=True)
 
     dataset_builder = DatasetBuilder(
         root_path=os.path.join(hydra.utils.get_original_cwd(), "../data"), **cfg.dataset
