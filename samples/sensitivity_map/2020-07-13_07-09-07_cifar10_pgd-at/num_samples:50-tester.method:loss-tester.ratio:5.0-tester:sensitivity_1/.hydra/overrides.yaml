@@ -1,5 +1,0 @@
-- tester=sensitivity
-- weight=/media/gatheluck/gathe-drive/models/uar/adv-cifar10-models/models/pgd-linf-8_model.pth
-- num_samples=50
-- tester.method=loss
-- tester.ratio=5.0

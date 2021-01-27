@@ -1,9 +1,0 @@
-attack:
-  name: pgd
-  norm: linf
-  eps_max: 8.0
-  num_iteration: 7
-  rand_init: True
-  scale_eps: False
-  scale_each: False
-  step_size: cfg.attack.eps_max / math.sqrt(cfg.attack.num_iteration)

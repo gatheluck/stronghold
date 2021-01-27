@@ -1,6 +1,0 @@
-script: test
-batch_size: 1024
-num_samples: -1
-device: cuda
-weight: null
-logger_path: 'local_log.csv'

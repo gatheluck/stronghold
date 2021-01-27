@@ -1,8 +1,0 @@
-script: train
-epochs: 90
-batch_size: 256
-num_nodes: 1
-distributed_backend: dp
-checkpoint_monitor: val_std_acc1_avg
-checkpoint_mode: max
-resume_ckpt_path: null

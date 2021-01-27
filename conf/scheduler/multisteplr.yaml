@@ -1,4 +1,0 @@
-scheduler:
-  name: multisteplr
-  milestones: [30, 60, 80]
-  gamma: 0.1

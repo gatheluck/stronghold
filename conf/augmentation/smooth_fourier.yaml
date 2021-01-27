@@ -1,6 +1,0 @@
-augmentation:
-  name: smooth_fourier
-  max_scale: 1.0
-  randomize_scale: True
-  sigmas: [0.25, 0.5]
-  eps: 4.0

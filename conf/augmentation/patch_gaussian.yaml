@@ -1,6 +1,0 @@
-augmentation:
-  name: patch_gaussian
-  patch_size: 25
-  max_scale: 1.0
-  randomize_patch_size: True
-  randomize_scale: True

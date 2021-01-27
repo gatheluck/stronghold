@@ -1,3 +1,0 @@
-- tester=corruption
-- dataset=cifar10c
-- weight=../logs/transfer/2020-07-04_07-06-54_fbdb_l2_basis-0031_cls-0022_patch_gaussian_cifar10/arch:resnet56-batch_size:256-dataset:cifar10-epochs:90-source_num_classes:22-unfreeze_level:0/checkpoint/model_weight_final.pth

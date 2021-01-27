@@ -1,3 +1,0 @@
-- tester=corruption
-- dataset=cifar10c
-- weight=../logs/train/2020-06-26_12-55-57_cifar10/checkpoint/model_weight_final.pth

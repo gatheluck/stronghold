@@ -1,6 +1,0 @@
-dataset:
-  name: fbdb_metric-balance_norm-l2_basis-0031_size-0224_cls-0496
-  mean: [0.1670, 0.1657, 0.1681]
-  std: [0.2380, 0.2392, 0.2371]
-  num_classes: 496
-  input_size: 224

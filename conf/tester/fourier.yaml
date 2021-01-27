@@ -1,9 +1,0 @@
-tester:
-  name: fourier
-  num_workers: 8
-  batch_size: 1024
-  num_samples: -1
-  h_map_size: 31
-  w_map_size: 31
-  eps: 4.0
-  shuffle: False

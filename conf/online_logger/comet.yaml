@@ -1,3 +1,0 @@
-online_logger:
-  name: comet
-  activate: True

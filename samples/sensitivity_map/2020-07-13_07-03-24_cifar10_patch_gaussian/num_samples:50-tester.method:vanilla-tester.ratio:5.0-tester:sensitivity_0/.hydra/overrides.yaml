@@ -1,5 +1,0 @@
-- tester=sensitivity
-- weight=../logs/train/2020-07-03_16-25-20_cifar10_patch_gaussian/checkpoint/model_weight_final.pth
-- num_samples=50
-- tester.method=vanilla
-- tester.ratio=5.0

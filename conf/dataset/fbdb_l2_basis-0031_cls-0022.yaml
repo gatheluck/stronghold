@@ -1,6 +1,0 @@
-dataset: 
-  name: fbdb_l2_basis-0031_cls-0022
-  mean: [0.1750, 0.1694, 0.1759]
-  std: [0.1725, 0.1764, 0.1698]
-  num_classes: 22
-  input_size: 32

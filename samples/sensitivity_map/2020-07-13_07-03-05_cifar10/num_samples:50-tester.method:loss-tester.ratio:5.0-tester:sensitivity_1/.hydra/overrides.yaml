@@ -1,5 +1,0 @@
-- tester=sensitivity
-- weight=../logs/train/2020-06-26_12-55-57_cifar10/checkpoint/model_weight_final.pth
-- num_samples=50
-- tester.method=loss
-- tester.ratio=5.0
