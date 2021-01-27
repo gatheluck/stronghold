@@ -1,0 +1,3 @@
+- tester=corruption
+- dataset=cifar10c
+- weight=../logs/transfer/2020-07-05_03-14-37_fbdb_l2_basis-0031_cls-0022_cifar10/arch:resnet56-batch_size:256-dataset:cifar10-epochs:90-source_num_classes:22-unfreeze_level:3/checkpoint/model_weight_final.pth

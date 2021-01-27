@@ -1,0 +1,4 @@
+mixer:
+  name: smoothmix
+  sigmas: [0.25, 0.5]
+  prob_use_mixaug: null

@@ -1,0 +1,5 @@
+augmentation:
+  name: smooth_gaussian
+  max_scale: 1.0
+  randomize_scale: True
+  sigmas: [0.25, 0.5]

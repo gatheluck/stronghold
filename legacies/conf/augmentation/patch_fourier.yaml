@@ -1,0 +1,5 @@
+augmentation:
+  name: patch_fourier
+  patch_size: 25
+  randomize_patch_size: True
+  eps: 4.0

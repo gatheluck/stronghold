@@ -1,0 +1,6 @@
+dataset:
+  name: fbdb_metric-freq_norm-l2_basis-0031_size-0224_cls-0022
+  mean: [0.1684, 0.1657, 0.1687]
+  std: [0.2385, 0.2395, 0.2377]
+  num_classes: 22
+  input_size: 224

@@ -1,0 +1,6 @@
+dataset: 
+  name: fbdb_full_basis-0031_cls-0961
+  mean: [0.1723, 0.1658, 0.1747]
+  std: [0.1469, 0.1520, 0.1450]
+  num_classes: 961
+  input_size: 32

@@ -1,0 +1,41 @@
+[2020-07-13 07:09:07,702][__main__][INFO] - test.py tester=sensitivity weight=/media/gatheluck/gathe-drive/models/uar/adv-cifar10-models/models/pgd-linf-8_model.pth num_samples=50 tester.method=vanilla,loss tester.ratio=5.0 -m
+[2020-07-13 07:09:07,704][__main__][INFO] - arch: resnet56
+attack:
+  eps_max: 8.0
+  name: pgd
+  norm: linf
+  num_iteration: 7
+  rand_init: true
+  scale_each: false
+  scale_eps: false
+  step_size: cfg.attack.eps_max / math.sqrt(cfg.attack.num_iteration)
+batch_size: 1024
+dataset:
+  input_size: 32
+  mean:
+  - 0.49139968
+  - 0.48215841
+  - 0.44653091
+  name: cifar10
+  num_classes: 10
+  std:
+  - 0.24703223
+  - 0.24348513
+  - 0.26158784
+device: cuda
+gpus: 1
+logger_path: local_log.csv
+normalize: true
+num_samples: 50
+num_workers: 8
+online_logger:
+  activate: true
+  name: comet
+prefix: ''
+tester:
+  method: vanilla
+  name: sensitivity
+  ratio: 5.0
+weight: /media/gatheluck/gathe-drive/models/uar/adv-cifar10-models/models/pgd-linf-8_model.pth
+
+[2020-07-13 07:09:07,760][__main__][INFO] - loading weight from /media/gatheluck/gathe-drive/models/uar/adv-cifar10-models/models/pgd-linf-8_model.pth

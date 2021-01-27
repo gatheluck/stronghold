@@ -1,0 +1,5 @@
+mixer:
+  name: cutmix
+  beta_dist_a: 1.0
+  beta_dist_b: 1.0
+  prob_use_mixaug: null

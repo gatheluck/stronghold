@@ -1,0 +1,44 @@
+[2020-07-07 13:25:29,169][__main__][INFO] - test.py tester=spacial arch=resnet56 dataset=cifar10 weight=../logs/train/2020-06-26_12-55-57_cifar10/checkpoint/model_weight_final.pth,../logs/train/2020-07-03_16-25-20_cifar10_patch_gaussian/checkpoint/model_weight_final.pth -m
+[2020-07-07 13:25:29,170][__main__][INFO] - arch: resnet56
+attack:
+  eps_max: 8.0
+  name: pgd
+  norm: linf
+  num_iteration: 7
+  rand_init: true
+  scale_each: false
+  scale_eps: false
+  step_size: cfg.attack.eps_max / math.sqrt(cfg.attack.num_iteration)
+batch_size: 1024
+dataset:
+  input_size: 32
+  mean:
+  - 0.49139968
+  - 0.48215841
+  - 0.44653091
+  name: cifar10
+  num_classes: 10
+  std:
+  - 0.24703223
+  - 0.24348513
+  - 0.26158784
+device: cuda
+gpus: 1
+logger_path: local_log.csv
+normalize: true
+num_workers: 8
+online_logger:
+  activate: true
+  name: comet
+prefix: ''
+tester:
+  batch_size: 1024
+  max_num_devide: 10
+  name: spacial
+  num_samples: -1
+  num_workers: 8
+  shuffle: false
+  top_k: 1
+weight: /home/gatheluck/Scratch/Stronghold/apps/../logs/train/2020-06-26_12-55-57_cifar10/checkpoint/model_weight_final.pth
+
+[2020-07-07 13:25:29,227][__main__][INFO] - loading weight from /home/gatheluck/Scratch/Stronghold/apps/../logs/train/2020-06-26_12-55-57_cifar10/checkpoint/model_weight_final.pth
