@@ -19,3 +19,6 @@
 [submodule "submodules/DataAugs"]
 	path = submodules/DataAugs
 	url = https://github.com/gatheluck/DataAugs.git
+[submodule "modules/archs"]
+	path = modules/archs
+	url = git@github.com:gatheluck/archs.git
