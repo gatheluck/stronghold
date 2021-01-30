@@ -1,0 +1,4 @@
+# @package _group_
+num_classes: 100
+widening_factor: 2
+droprate: 0.3

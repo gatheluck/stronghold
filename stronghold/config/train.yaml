@@ -1,0 +1,8 @@
+defaults:
+  - arch: resnet56
+  - optimizer: sgd
+  - scheduler: cosin
+
+# hydra:
+#   run:
+#     dir: ${env.save_dir}
