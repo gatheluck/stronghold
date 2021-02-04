@@ -184,6 +184,7 @@ class Cifar10DataModule(BaseDataModule):
 
     def prepare_data(self, *args, **kwargs) -> None:
         """Try to download dataset (DO NOT assign train/val here)."""
+        self.root.mkdir(exist_ok=True, parents=True)
         torchvision.datasets.CIFAR10(root=self.root, train=True, download=True)
         torchvision.datasets.CIFAR10(root=self.root, train=False, download=True)
 
