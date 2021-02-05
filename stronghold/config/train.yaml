@@ -1,5 +1,6 @@
 defaults:
   - arch: resnet56
+  - dataset: cifar10
   - optimizer: sgd
   - scheduler: cosin
 

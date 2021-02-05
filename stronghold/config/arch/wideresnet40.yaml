@@ -1,4 +1,3 @@
 # @package _group_
-num_classes: ${dataset.num_classes}
 widening_factor: 2
 droprate: 0.3
