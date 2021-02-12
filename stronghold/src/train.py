@@ -7,11 +7,11 @@ from typing import Final, List
 import comet_ml  # noqa NOTE:this is needed to avoid error. For detail, please check; https://github.com/PyTorchLightning/pytorch-lightning/issues/5829
 import hydra
 import pytorch_lightning as pl
-from pytorch_lightning.callbacks.base import Callback
-from pytorch_lightning.loggers.base import LightningLoggerBase
 from hydra.core.config_store import ConfigStore
 from hydra.utils import instantiate
 from omegaconf import MISSING, OmegaConf
+from pytorch_lightning.callbacks.base import Callback
+from pytorch_lightning.loggers.base import LightningLoggerBase
 
 import stronghold.src.factory.networks.classifier as classifier
 import stronghold.src.schema as schema
