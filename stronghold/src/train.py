@@ -2,11 +2,13 @@ import logging
 import os
 import pathlib
 from dataclasses import dataclass
-from typing import Final
+from typing import Final, List
 
 import comet_ml  # noqa NOTE:this is needed to avoid error. For detail, please check; https://github.com/PyTorchLightning/pytorch-lightning/issues/5829
 import hydra
 import pytorch_lightning as pl
+from pytorch_lightning.callbacks.base import Callback
+from pytorch_lightning.loggers.base import LightningLoggerBase
 from hydra.core.config_store import ConfigStore
 from hydra.utils import instantiate
 from omegaconf import MISSING, OmegaConf
@@ -23,7 +25,7 @@ class ModelCheckpointConfig:
     _target_: str = "pytorch_lightning.callbacks.ModelCheckpoint"
     filename: str = "{epoch}-{val_err1:.2f}"
     dirpath: str = "checkpoint"
-    mode: str = min
+    mode: str = "min"
     monitor: str = "val_err1"
     save_last: bool = True
     verbose: bool = True
@@ -89,7 +91,7 @@ def train(cfg: TrainConfig) -> None:
     # Setup loggers
     # - MLFlow: It is used as local logger.
     # - CometML: It is used as online logger. The environmental variable "COMET_API_KEY" need to be defined for use.
-    loggers = list()
+    loggers: List[LightningLoggerBase] = list()
     loggers.append(pl.loggers.MLFlowLogger(save_dir="mlflow"))
     try:
         loggers.append(pl.loggers.CometLogger(api_key=os.environ.get("COMET_API_KEY")))
@@ -100,7 +102,7 @@ def train(cfg: TrainConfig) -> None:
 
     # Setup callbacks
     # - ModelCheckpoint: It saves checkpoint.
-    callbacks = list()
+    callbacks: List[Callback] = list()
     callbacks.append(instantiate(ModelCheckpointConfig))
 
     # setup trainer
