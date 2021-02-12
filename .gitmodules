@@ -1,24 +1,3 @@
-[submodule "submodules/DatasetBuilder"]
-	path = submodules/DatasetBuilder
-	url = https://github.com/gatheluck/DatasetBuilder.git
-[submodule "submodules/ModelBuilder"]
-	path = submodules/ModelBuilder
-	url = https://github.com/gatheluck/ModelBuilder.git
-[submodule "submodules/FourierHeatmap"]
-	path = submodules/FourierHeatmap
-	url = https://github.com/gatheluck/FourierHeatmap.git
-[submodule "submodules/AttackBuilder"]
-	path = submodules/AttackBuilder
-	url = https://github.com/gatheluck/AttackBuilder.git
-[submodule "submodules/CnnSpacialSensitivity"]
-	path = submodules/CnnSpacialSensitivity
-	url = https://github.com/gatheluck/CnnSpacialSensitivity.git
-[submodule "submodules/PatchGaussian"]
-	path = submodules/PatchGaussian
-	url = https://github.com/gatheluck/PatchGaussian.git
-[submodule "submodules/DataAugs"]
-	path = submodules/DataAugs
-	url = https://github.com/gatheluck/DataAugs.git
 [submodule "modules/archs"]
 	path = modules/archs
 	url = git@github.com:gatheluck/archs.git

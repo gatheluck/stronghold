@@ -1,9 +1,10 @@
 defaults:
   - arch: resnet56
+  - env: local
   - dataset: cifar10
   - optimizer: sgd
   - scheduler: cosin
 
-# hydra:
-#   run:
-#     dir: ${env.save_dir}
+hydra:
+  run:
+    dir: ${env.save_dir}/${hydra.job.name}/${now:%Y-%m-%d_%H-%M-%S}
