@@ -1,3 +1,0 @@
-[submodule "modules/archs"]
-	path = modules/archs
-	url = git@github.com:gatheluck/archs.git
