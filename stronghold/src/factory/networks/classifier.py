@@ -39,7 +39,9 @@ class LitClassifier(pl.LightningModule):
         """Forward input to encoder to get logit."""
         return self.encoder(x)
 
-    def training_step(self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int) -> Dict[str, Union[torch.Tensor, Dict[str, torch.Tensor]]]:  # type: ignore
+    def training_step(  # type: ignore
+        self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int
+    ) -> Dict[str, Union[torch.Tensor, Dict[str, torch.Tensor]]]:
         """Single training step.
 
         Args:
@@ -71,7 +73,7 @@ class LitClassifier(pl.LightningModule):
         self.log("train_err5", err5.detach(), on_epoch=True, sync_dist=True)
         return loss
 
-    def validation_step(
+    def validation_step(  # type: ignore
         self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int
     ) -> None:
         """Single validation step.
