@@ -68,8 +68,10 @@ torch = {version = "^1.7.1", markers = "python_version >= \"3.8\" and python_ver
 torchvision = "^0.8.2"
 
 [package.source]
-type = "directory"
-url = "modules/archs"
+type = "git"
+url = "ssh://git@github.com/gatheluck/archs.git"
+reference = "master"
+resolved_reference = "9aa3af146d3a1b4a700d3a3f988e069e8ae54333"
 
 [[package]]
 name = "async-timeout"
@@ -1363,7 +1365,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "808f6e6b575d987a3e9c2c88b0e926f935c1b4865eb74c52a2f595c3652a1ca0"
+content-hash = "c361a904f95fede6871449831001141a9428d3ac5a6c5bd72654232564af9fb2"
 
 [metadata.files]
 absl-py = [
