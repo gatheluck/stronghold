@@ -1,6 +1,6 @@
-import torch
-
 from typing import List, Tuple
+
+import torch
 
 
 def calc_errors(
