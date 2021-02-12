@@ -3,8 +3,6 @@
 ## Directory Structure
 ```
 root
-├── submodules
-│   └── archs
 ├── mypy.ini
 ├── poetry.lock
 ├── poetry.toml
@@ -23,6 +21,8 @@ root
 │       │   └── networks
 │       ├── schema
 │       └── train.py
+├── submodules
+│   └── archs
 ├── tests
 └── tox.ini
 ```
