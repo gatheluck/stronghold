@@ -34,10 +34,10 @@ jobs:
         run: poetry run mypy stronghold
 
       - name: Run black test
-        run: poetry run black --check stronghold
+        run: poetry run black --check stronghold tests
 
       - name: Run isort test
-        run: poetry run isort --check-only .
+        run: poetry run isort --check-only stronghold tests
 
       - name: Run flake8 test
-        run: poetry run flake8 .
+        run: poetry run flake8 stronghold tests
