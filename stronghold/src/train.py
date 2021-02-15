@@ -88,7 +88,10 @@ def train(cfg: TrainConfig) -> None:
     # setup model
     arch = instantiate(cfg.arch)
     model = classifier.LitClassifier(
-        encoder=arch, attacker_cfg=cfg.attacker, optimizer_cfg=cfg.optimizer, scheduler_cfg=cfg.scheduler
+        encoder=arch,
+        attacker_cfg=cfg.attacker,
+        optimizer_cfg=cfg.optimizer,
+        scheduler_cfg=cfg.scheduler,
     )
 
     # Setup loggers

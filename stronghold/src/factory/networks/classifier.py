@@ -1,4 +1,4 @@
-from typing import Dict, Final, Tuple, Union
+from typing import Dict, Final, Optional, Tuple, Union
 
 import pytorch_lightning as pl
 import torch
@@ -26,7 +26,7 @@ class LitClassifier(pl.LightningModule):
     def __init__(
         self,
         encoder: nn.Module,
-        attacker_cfg: schema.AttackerConfig,
+        attacker_cfg: Optional[schema.AttackerConfig],
         optimizer_cfg: schema.OptimizerConfig,
         scheduler_cfg: schema.SchedulerConfig,
     ) -> None:
