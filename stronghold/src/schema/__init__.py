@@ -2,6 +2,7 @@ from .arch import (  # noqa
     ArchConfig,
     Resnet50Config,
     Resnet56Config,
+    Vit16Config,
     Wideresnet40Config,
 )
 from .attacker import AttackerConfig, PgdConfig  # noqa

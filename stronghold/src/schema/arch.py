@@ -34,3 +34,8 @@ class WideresnetConfig(ArchConfig):
 @dataclass
 class Wideresnet40Config(WideresnetConfig):
     _target_: str = "archs.wideresnet40"
+
+
+@dataclass
+class Vit16Config(WideresnetConfig):
+    _target_: str = "archs.vit16"
