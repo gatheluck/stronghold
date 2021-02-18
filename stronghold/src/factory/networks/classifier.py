@@ -1,4 +1,4 @@
-from typing import Dict, Final, Tuple, Union
+from typing import Dict, Final, Optional, Tuple, Union
 
 import pytorch_lightning as pl
 import torch
@@ -26,11 +26,13 @@ class LitClassifier(pl.LightningModule):
     def __init__(
         self,
         encoder: nn.Module,
+        attacker_cfg: Optional[schema.AttackerConfig],
         optimizer_cfg: schema.OptimizerConfig,
         scheduler_cfg: schema.SchedulerConfig,
     ) -> None:
         super().__init__()
         self.encoder = encoder
+        self.attacker_cfg = attacker_cfg
         self.optimizer_cfg = optimizer_cfg
         self.scheduler_cfg = scheduler_cfg
         self.criterion: Final[_Loss] = torch.nn.CrossEntropyLoss()
@@ -53,6 +55,9 @@ class LitClassifier(pl.LightningModule):
 
         """
         x, t = batch  # DO NOT need to send GPU manually.
+
+        if self.attacker_cfg:
+            pass
 
         # forward to encoder
         output = self.encoder(x)

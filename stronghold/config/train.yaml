@@ -1,4 +1,5 @@
 defaults:
+  - attacker: null
   - arch: resnet56
   - env: local
   - dataset: cifar10

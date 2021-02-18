@@ -2,7 +2,7 @@ import logging
 import os
 import pathlib
 from dataclasses import dataclass
-from typing import Final, List
+from typing import Final, List, Optional
 
 import comet_ml  # noqa NOTE:this is needed to avoid error. For detail, please check; https://github.com/PyTorchLightning/pytorch-lightning/issues/5829
 import hydra
@@ -34,6 +34,7 @@ class ModelCheckpointConfig:
 @dataclass
 class TrainConfig:
     # grouped configs
+    attacker: Optional[schema.AttackerConfig] = None
     arch: schema.ArchConfig = MISSING
     env: schema.EnvConfig = MISSING
     dataset: schema.DatasetConfig = MISSING
@@ -46,6 +47,8 @@ class TrainConfig:
 
 cs = ConfigStore.instance()
 cs.store(name="train", node=TrainConfig)
+# attacker
+cs.store(group="attacker", name="pgd", node=schema.PgdConfig)
 # arch
 cs.store(group="arch", name="resnet50", node=schema.Resnet50Config)
 cs.store(group="arch", name="resnet56", node=schema.Resnet56Config)
@@ -85,7 +88,10 @@ def train(cfg: TrainConfig) -> None:
     # setup model
     arch = instantiate(cfg.arch)
     model = classifier.LitClassifier(
-        encoder=arch, optimizer_cfg=cfg.optimizer, scheduler_cfg=cfg.scheduler
+        encoder=arch,
+        attacker_cfg=cfg.attacker,
+        optimizer_cfg=cfg.optimizer,
+        scheduler_cfg=cfg.scheduler,
     )
 
     # Setup loggers

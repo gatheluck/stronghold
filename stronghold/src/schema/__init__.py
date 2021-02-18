@@ -1,4 +1,5 @@
 from .arch import ArchConfig, Resnet50Config, Resnet56Config, Wideresnet40Config  # noqa
+from .attacker import AttackerConfig, PgdConfig  # noqa
 from .dataset import Cifar10Config, DatasetConfig  # noqa
 from .env import EnvConfig, LocalConfig  # noqa
 from .optimizer import AdamConfig, OptimizerConfig, SgdConfig  # noqa
