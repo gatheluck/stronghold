@@ -55,6 +55,7 @@ cs.store(group="arch", name="resnet56", node=schema.Resnet56Config)
 cs.store(group="arch", name="wideresnet40", node=schema.Wideresnet40Config)
 # dataset
 cs.store(group="dataset", name="cifar10", node=schema.Cifar10Config)
+cs.store(group="dataset", name="imagenet", node=schema.ImagenetConfig)
 # env
 cs.store(group="env", name="local", node=schema.LocalConfig)
 # optimizer
