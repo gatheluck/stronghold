@@ -2,9 +2,8 @@ import logging
 import pathlib
 from typing import Dict, Final, List, Tuple, Union
 
-import torch
-
 import pandas as pd
+import torch
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)

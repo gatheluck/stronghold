@@ -1,33 +1,34 @@
 import logging
-import hydra
 import pathlib
+from collections import OrderedDict
 from dataclasses import dataclass
-from typing import Dict, Final, Tuple
-from hydra.utils import instantiate
+from enum import IntEnum, auto
+from typing import Dict, Final
+
+import hydra
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
-from torch.nn.modules.loss import _Loss
-from collections import OrderedDict
-
-import stronghold.src.common
-
 from hydra.core.config_store import ConfigStore
+from hydra.utils import instantiate
 from omegaconf import MISSING, OmegaConf
-from enum import IntEnum, auto
 from tqdm import tqdm
 
+import stronghold.src.common
 import stronghold.src.schema as schema
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-def eval_standard_error(arch: nn.Module, datamodule: pl.LightningDataModule, device: torch.device) -> Dict[str, float]:
-    """
-    """
+def eval_standard_error(
+    arch: nn.Module, datamodule: pl.LightningDataModule, device: torch.device
+) -> Dict[str, float]:
+    """"""
     if not datamodule.has_setup_test:
-        raise ValueError("Input datamodule does not have test data. Please call setup method first.")
+        raise ValueError(
+            "Input datamodule does not have test data. Please call setup method first."
+        )
     loader = datamodule.test_dataloader()
 
     arch = arch.to(device)
@@ -85,9 +86,7 @@ cs.store(group="env", name="local", node=schema.LocalConfig)
 
 @hydra.main(config_path="../config", config_name="test")
 def test(cfg: TestConfig) -> None:
-    """Test trained model.
-
-    """
+    """Test trained model."""
     # Make config read only.
     # without this, config values might be changed accidentally.
     OmegaConf.set_readonly(cfg, True)  # type: ignore
