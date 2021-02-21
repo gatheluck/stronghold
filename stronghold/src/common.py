@@ -1,6 +1,6 @@
 import logging
 import pathlib
-from typing import Dict, Final, List, Tuple, Union
+from typing import Final, List, Mapping, Tuple, Union
 
 import pandas as pd
 import torch
@@ -52,7 +52,7 @@ class Logger:
         self.df = pd.DataFrame(columns=columns)
         self._save()
 
-    def log(self, metrics: Dict[str, Union[float, str]]) -> None:
+    def log(self, metrics: Mapping[str, Union[float, str]]) -> None:
         self.df = pd.read_csv(self.savepath, index_col=0)
         for k, v in metrics.items():
             self.df = self.df.append(dict(name=k, value=v), ignore_index=True)

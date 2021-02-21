@@ -3,7 +3,7 @@ import pathlib
 from collections import OrderedDict
 from dataclasses import dataclass
 from enum import IntEnum, auto
-from typing import Dict, Final
+from typing import Dict, Final, cast
 
 import hydra
 import pytorch_lightning as pl
@@ -92,7 +92,7 @@ def test(cfg: TestConfig) -> None:
     OmegaConf.set_readonly(cfg, True)  # type: ignore
     logger.info(OmegaConf.to_yaml(cfg))
 
-    device: Final[torch.device] = "cuda" if cfg.env.gpus > 0 else "cpu"
+    device: Final = "cuda" if cfg.env.gpus > 0 else "cpu"
     weightpath: Final[pathlib.Path] = pathlib.Path(cfg.weightpath)
 
     # get original working directory since hydra automatically changes it.
@@ -112,7 +112,7 @@ def test(cfg: TestConfig) -> None:
 
     # test
     if cfg.mode == TestMode.STD:
-        retdict = eval_standard_error(arch, datamodule, device)
+        retdict = eval_standard_error(arch, datamodule, cast(torch.device, device))
 
     # setup logger
     logpath = pathlib.Path("result.csv")
