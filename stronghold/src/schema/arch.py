@@ -37,5 +37,6 @@ class Wideresnet40Config(WideresnetConfig):
 
 
 @dataclass
-class Vit16Config(WideresnetConfig):
+class Vit16Config(ArchConfig):
     _target_: str = "archs.vit16"
+    pretrained: bool = MISSING
