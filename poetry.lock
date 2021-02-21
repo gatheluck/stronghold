@@ -64,6 +64,8 @@ python-versions = "^3.8"
 develop = false
 
 [package.dependencies]
+einops = "^0.3.0"
+timm = "^0.3.4"
 torch = {version = "^1.7.1", markers = "python_version >= \"3.8\" and python_version < \"4.0\" and sys_platform == \"linux\""}
 torchvision = "^0.8.2"
 
@@ -321,6 +323,14 @@ fastimport = ["fastimport"]
 https = ["urllib3[secure] (>=1.24.1)"]
 pgp = ["gpg"]
 watch = ["pyinotify"]
+
+[[package]]
+name = "einops"
+version = "0.3.0"
+description = "A new flavour of deep learning operations"
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "entrypoints"
@@ -1221,6 +1231,18 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "timm"
+version = "0.3.4"
+description = "(Unofficial) PyTorch Image Models"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+torch = ">=1.4"
+torchvision = "*"
+
+[[package]]
 name = "toml"
 version = "0.10.2"
 description = "Python Library for Tom's Obvious, Minimal Language"
@@ -1258,7 +1280,7 @@ scipy = ["scipy"]
 
 [[package]]
 name = "tqdm"
-version = "4.56.0"
+version = "4.57.0"
 description = "Fast, Extensible Progress Meter"
 category = "main"
 optional = false
@@ -1363,7 +1385,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "04983ffbd4c5f237e8321edc7ed0e00a8653e84041aebe766cfe615737d28182"
+content-hash = "9fd945d696f3876faec6e0f49dce177f553e09e85719a378ee6cfcbba34866a7"
 
 [metadata.files]
 absl-py = [
@@ -1584,6 +1606,10 @@ dulwich = [
     {file = "dulwich-0.20.18-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:c832a13358c58a27198cc38bec977fbfe2fe80e8a062bbb3711a5c2a527c0692"},
     {file = "dulwich-0.20.18-cp39-cp39-win_amd64.whl", hash = "sha256:f55d82ba10b4b78fe1a5c2b970e97cfff6f1d0af3f7073306bf88d3ea02d04a2"},
     {file = "dulwich-0.20.18.tar.gz", hash = "sha256:0131387f9b99aecc69ac98655b3931f2ad43da53d3a63e050fa3a6d6260ac554"},
+]
+einops = [
+    {file = "einops-0.3.0-py2.py3-none-any.whl", hash = "sha256:a91c6190ceff7d513d74ca9fd701dfa6a1ffcdd98ea0ced14350197c07f75c73"},
+    {file = "einops-0.3.0.tar.gz", hash = "sha256:a3b0935a4556f012cd5fa1851373f63366890a3f6698d117afea55fd2a40c1fc"},
 ]
 entrypoints = [
     {file = "entrypoints-0.3-py2.py3-none-any.whl", hash = "sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19"},
@@ -2258,6 +2284,10 @@ tensorboard = [
 tensorboard-plugin-wit = [
     {file = "tensorboard_plugin_wit-1.8.0-py3-none-any.whl", hash = "sha256:2a80d1c551d741e99b2f197bb915d8a133e24adb8da1732b840041860f91183a"},
 ]
+timm = [
+    {file = "timm-0.3.4-py3-none-any.whl", hash = "sha256:3977010be72183a9629d655ed96f1170690218b0c92faa082929241abf2373a2"},
+    {file = "timm-0.3.4.tar.gz", hash = "sha256:d55d82dacb9d76afbadb75f7c63ed310a14dc26d79fd4b3b05db0387fb1aec8f"},
+]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
     {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
@@ -2287,8 +2317,8 @@ torchvision = [
     {file = "torchvision-0.8.2-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:976750a49db2e23dc5a1ed0b5c31f7af51ed2702eee410ee09ef985c3a3e48cf"},
 ]
 tqdm = [
-    {file = "tqdm-4.56.0-py2.py3-none-any.whl", hash = "sha256:4621f6823bab46a9cc33d48105753ccbea671b68bab2c50a9f0be23d4065cb5a"},
-    {file = "tqdm-4.56.0.tar.gz", hash = "sha256:fe3d08dd00a526850568d542ff9de9bbc2a09a791da3c334f3213d8d0bbbca65"},
+    {file = "tqdm-4.57.0-py2.py3-none-any.whl", hash = "sha256:70657337ec104eb4f3fb229285358f23f045433f6aea26846cdd55f0fd68945c"},
+    {file = "tqdm-4.57.0.tar.gz", hash = "sha256:65185676e9fdf20d154cffd1c5de8e39ef9696ff7e59fe0156b1b08e468736af"},
 ]
 typed-ast = [
     {file = "typed_ast-1.4.2-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:7703620125e4fb79b64aa52427ec192822e9f45d37d4b6625ab37ef403e1df70"},
