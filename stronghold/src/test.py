@@ -3,16 +3,16 @@ import pathlib
 from collections import OrderedDict
 from dataclasses import dataclass
 from enum import IntEnum, auto
-from typing import Dict, Final, Tuple, cast
+from typing import Any, Dict, Final, Tuple, cast
 
 import hydra
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
 from hydra.core.config_store import ConfigStore
 from hydra.utils import instantiate
 from omegaconf import MISSING, OmegaConf
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 import stronghold.src.common
@@ -46,15 +46,21 @@ def eval_standard_error(
     return mean_err1, mean_err5
 
 
-def eval_corruption_error(arch: nn.Module, datamodule: pl.LightningDataModule, device: torch.device, logger) -> Dict[str, float]:
+def eval_corruption_error(
+    arch: nn.Module,
+    datamodule: pl.LightningDataModule,
+    device: torch.device,
+    custom_logger: Any = None,
+) -> Dict[str, float]:
     """
     Args:
         arch
         datamodule
         device
+        custom_logger
     """
-    retdict = dict()
-    with tqdm(datamodule.corruptions, ncols=80) as pbar:
+    retdict: Dict[str, float] = dict()
+    with tqdm(datamodule.corruptions, ncols=80) as pbar:  # type: ignore
         for corruption in pbar:
             # prepare loader for specific corruption
             datamodule.prepare_data(corruption=corruption)
@@ -62,13 +68,18 @@ def eval_corruption_error(arch: nn.Module, datamodule: pl.LightningDataModule, d
             loader = datamodule.test_dataloader()
 
             # calculate errors for the corruptions
-            err1, err5 = eval_standard_error(arch, loader, device)  # return is Tuple[float, float]
+            err1, err5 = eval_standard_error(
+                arch, cast(DataLoader, loader), device
+            )  # return is Tuple[float, float]
             results = OrderedDict()
             results[f"{corruption}-err1"] = err1
             results[f"{corruption}-err5"] = err5
 
             pbar.set_postfix(results)
             pbar.update()
+
+            if custom_logger:
+                custom_logger.log(results)
 
             retdict.update(results)
 
@@ -153,8 +164,9 @@ def test(cfg: TestConfig) -> None:
     # evaluate corruption error.
     elif cfg.mode == TestMode.CORRUPTION:
         datamodule = instantiate(cfg.dataset, cfg.batch_size, cfg.env.num_workers, root)
-        retdict = eval_corruption_error(arch, datamodule, cast(torch.device, device))
-        custom_logger.log(retdict)
+        eval_corruption_error(
+            arch, datamodule, cast(torch.device, device), custom_logger
+        )
 
 
 if __name__ == "__main__":

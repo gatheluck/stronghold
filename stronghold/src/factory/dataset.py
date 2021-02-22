@@ -8,16 +8,14 @@ Todo:
 import logging
 import pathlib
 from dataclasses import dataclass
+from enum import IntEnum, auto
 from typing import Final, List, Optional, Tuple
 
-import torch
 import pytorch_lightning as pl
+import torch
 import torchvision
 from omegaconf import MISSING
 from torch.utils.data import DataLoader, Dataset
-
-from enum import IntEnum, auto
-
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -300,7 +298,7 @@ class ImagenetcDataModule(BaseDataModule):
         self.corruption: str
         self.level: Optional[int]
 
-    def prepare_data(self, *args, corruption: str, level: Optional[int] = None, **kwargs) -> None:
+    def prepare_data(self, corruption: str, level: Optional[int] = None) -> None:  # type: ignore
         """check if ImageNet dataset exists (DO NOT assign train/val here).
 
         Args:
@@ -315,7 +313,9 @@ class ImagenetcDataModule(BaseDataModule):
             raise ValueError(f"level: {level} is not supported.")
 
         # check whether target dataset path is exists.
-        datasetpath: Final = self.root / corruption / level if level else self.root / corruption
+        datasetpath: Final = (
+            self.root / corruption / str(level) if level else self.root / corruption
+        )
         if not datasetpath.exists():
             raise ValueError(f"{datasetpath} dose not exist.")
 
@@ -341,16 +341,22 @@ class ImagenetcDataModule(BaseDataModule):
         # Prepare specific leval of corruption.
         if self.level:
             self.val_dataset: Dataset = torchvision.datasets.ImageFolder(
-                root=self.root / self.corruption / self.level,
+                root=self.root / self.corruption / str(self.level),
                 transform=self._get_transform(train=False),
             )
-            msg: Final = f"corruption: {self.corruption}, level: {self.corruption}."
+            msg = f"corruption: {self.corruption}, level: {self.corruption}."
 
         # If self.level is None, prepare all levels as concatenated dataset.
         else:
-            datasets: List[Dataset] = [torchvision.datasets.ImageFolder(root=self.root / self.corruption / str(level), transform=self._get_transform(train=False)) for level in self.levels]
-            self.val_dataset: Dataset = torch.utils.data.ConcatDataset(datasets)
-            msg: Final = f"corruption: {self.corruption}, level: ALL."
+            datasets: List[Dataset] = [
+                torchvision.datasets.ImageFolder(
+                    root=self.root / self.corruption / str(level),
+                    transform=self._get_transform(train=False),
+                )
+                for level in self.levels
+            ]
+            self.val_dataset: Dataset = torch.utils.data.ConcatDataset(datasets)  # type: ignore
+            msg = f"corruption: {self.corruption}, level: ALL."
 
         # logger message
         logger.info(f"setup - {msg}")
