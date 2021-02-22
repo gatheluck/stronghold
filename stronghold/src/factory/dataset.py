@@ -309,7 +309,7 @@ class ImagenetcDataModule(BaseDataModule):
         # check the validity of corruption and level.
         if corruption not in self.corruptions:
             raise ValueError(f"corruption: {corruption} is not supported.")
-        if level not in self.levels:
+        if level and (level not in self.levels):
             raise ValueError(f"level: {level} is not supported.")
 
         # check whether target dataset path is exists.
