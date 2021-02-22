@@ -16,3 +16,8 @@ class Cifar10Config(DatasetConfig):
 @dataclass(frozen=True)
 class ImagenetConfig(DatasetConfig):
     _target_: str = "stronghold.src.factory.dataset.ImagenetDataModule"
+
+
+@dataclass(frozen=True)
+class ImagenetcConfig(DatasetConfig):
+    _target_: str = "stronghold.src.factory.dataset.ImagenetcDataModule"

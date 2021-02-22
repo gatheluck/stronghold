@@ -3,7 +3,7 @@ import pathlib
 from collections import OrderedDict
 from dataclasses import dataclass
 from enum import IntEnum, auto
-from typing import Dict, Final, cast
+from typing import Any, Dict, Final, Tuple, cast
 
 import hydra
 import pytorch_lightning as pl
@@ -12,6 +12,7 @@ import torch.nn as nn
 from hydra.core.config_store import ConfigStore
 from hydra.utils import instantiate
 from omegaconf import MISSING, OmegaConf
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 import stronghold.src.common
@@ -22,15 +23,9 @@ logging.basicConfig(level=logging.INFO)
 
 
 def eval_standard_error(
-    arch: nn.Module, datamodule: pl.LightningDataModule, device: torch.device
-) -> Dict[str, float]:
+    arch: nn.Module, loader: DataLoader, device: torch.device
+) -> Tuple[float, float]:
     """"""
-    if not datamodule.has_setup_test:
-        raise ValueError(
-            "Input datamodule does not have test data. Please call setup method first."
-        )
-    loader = datamodule.test_dataloader()
-
     arch = arch.to(device)
     err1_list, err5_list = list(), list()
     with torch.no_grad():
@@ -48,12 +43,53 @@ def eval_standard_error(
 
     mean_err1 = sum(err1_list) / len(err1_list)
     mean_err5 = sum(err5_list) / len(err5_list)
-    return dict(stderr1=mean_err1, stderr5=mean_err5)
+    return mean_err1, mean_err5
+
+
+def eval_corruption_error(
+    arch: nn.Module,
+    datamodule: pl.LightningDataModule,
+    device: torch.device,
+    custom_logger: Any = None,
+) -> Dict[str, float]:
+    """
+    Args:
+        arch
+        datamodule
+        device
+        custom_logger
+    """
+    retdict: Dict[str, float] = dict()
+    with tqdm(datamodule.corruptions, ncols=80) as pbar:  # type: ignore
+        for corruption in pbar:
+            # prepare loader for specific corruption
+            datamodule.prepare_data(corruption=corruption)
+            datamodule.setup("test")
+            loader = datamodule.test_dataloader()
+
+            # calculate errors for the corruptions
+            err1, err5 = eval_standard_error(
+                arch, cast(DataLoader, loader), device
+            )  # return is Tuple[float, float]
+            results = OrderedDict()
+            results[f"{corruption}-err1"] = err1
+            results[f"{corruption}-err5"] = err5
+
+            pbar.set_postfix(results)
+            pbar.update()
+
+            if custom_logger:
+                custom_logger.log(results)
+
+            retdict.update(results)
+
+    return retdict
 
 
 class TestMode(IntEnum):
     STD = auto()
     ADV = auto()
+    CORRUPTION = auto()
 
 
 @dataclass
@@ -80,6 +116,7 @@ cs.store(group="arch", name="vit16", node=schema.Vit16Config)
 # dataset
 cs.store(group="dataset", name="cifar10", node=schema.Cifar10Config)
 cs.store(group="dataset", name="imagenet", node=schema.ImagenetConfig)
+cs.store(group="dataset", name="imagenetc", node=schema.ImagenetcConfig)
 # env
 cs.store(group="env", name="local", node=schema.LocalConfig)
 
@@ -92,32 +129,44 @@ def test(cfg: TestConfig) -> None:
     OmegaConf.set_readonly(cfg, True)  # type: ignore
     logger.info(OmegaConf.to_yaml(cfg))
 
+    # Set constants.
+    # device: The device which is used in culculation.
+    # cwd: The original current working directory. hydra automatically changes it.
+    # weightpath: The path of target trained weight.
     device: Final = "cuda" if cfg.env.gpus > 0 else "cpu"
-    weightpath: Final[pathlib.Path] = pathlib.Path(cfg.weightpath)
-
-    # get original working directory since hydra automatically changes it.
     cwd: Final[pathlib.Path] = pathlib.Path(hydra.utils.get_original_cwd())
+    weightpath: Final[pathlib.Path] = pathlib.Path(cfg.weightpath)
+    logpath: Final[pathlib.Path] = pathlib.Path("results.csv")
 
-    # setup datamodule
-    root: Final[pathlib.Path] = cwd / "data"
-    datamodule = instantiate(cfg.dataset, cfg.batch_size, cfg.env.num_workers, root)
-    datamodule.prepare_data()
-    datamodule.setup("test")
-
-    # setup model
+    # Setup model
     arch = instantiate(cfg.arch)
     arch.load_state_dict(torch.load(weightpath))
     arch = arch.to(device)
     arch.eval()
 
-    # test
-    if cfg.mode == TestMode.STD:
-        retdict = eval_standard_error(arch, datamodule, cast(torch.device, device))
-
-    # setup logger
-    logpath = pathlib.Path("result.csv")
+    # Setup custom logger. This logger is used for logging results.
     custom_logger = stronghold.src.common.Logger(logpath)
-    custom_logger.log(retdict)
+
+    # setup datamodule
+    root: Final[pathlib.Path] = cwd / "data"
+    datamodule = instantiate(cfg.dataset, cfg.batch_size, cfg.env.num_workers, root)
+
+    # run tests
+    # evaluate standard error.
+    if cfg.mode == TestMode.STD:
+        datamodule.prepare_data()
+        datamodule.setup("test")
+
+        loader = datamodule.test_dataloader()
+        err1, err5 = eval_standard_error(arch, loader, cast(torch.device, device))
+        custom_logger.log(dict(stderr1=err1, srderr5=err5))
+
+    # evaluate corruption error.
+    elif cfg.mode == TestMode.CORRUPTION:
+        datamodule = instantiate(cfg.dataset, cfg.batch_size, cfg.env.num_workers, root)
+        eval_corruption_error(
+            arch, datamodule, cast(torch.device, device), custom_logger
+        )
 
 
 if __name__ == "__main__":
