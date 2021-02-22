@@ -5,14 +5,22 @@ Todo:
 
 """
 
+import logging
 import pathlib
 from dataclasses import dataclass
-from typing import Final, Tuple
+from typing import Final, List, Optional, Tuple
 
+import torch
 import pytorch_lightning as pl
 import torchvision
 from omegaconf import MISSING
 from torch.utils.data import DataLoader, Dataset
+
+from enum import IntEnum, auto
+
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 
 @dataclass(frozen=True)
@@ -247,3 +255,112 @@ class ImagenetDataModule(BaseDataModule):
             root=self.root / "val",
             transform=self._get_transform(train=False),
         )
+
+
+class ImagenetcDataModule(BaseDataModule):
+    """The LightningDataModule for ImageNet-C dataset.
+
+    Attributes:
+        dataset_stats (DatasetStats): The dataclass which holds dataset statistics.
+        root (pathlib.Path): The root path which dataset exists.
+        corruption (str): The name of the corruption.
+        level (int, optional): The level of the corruption.
+
+    """
+
+    class Corruptions(IntEnum):
+        brightness = auto()
+        contrast = auto()
+        defocus_blur = auto()
+        elastic_transform = auto()
+        fog = auto()
+        frost = auto()
+        gaussian_noise = auto()
+        gaussian_blur = auto()
+        impulse_noise = auto()
+        jpeg_compression = auto()
+        motion_blur = auto()
+        pixelate = auto()
+        shot_noise = auto()
+        snow = auto()
+        zoom_blur = auto()
+
+    def __init__(self, batch_size: int, num_workers: int, root: pathlib.Path) -> None:
+        """
+
+        Args
+            batch_size (int): The size of batch.
+            num_works (int): The number of workers.
+            root (pathlib.Path): The path of root directory of the dataset.
+
+        """
+        super().__init__(batch_size, num_workers, root)
+        self.dataset_stats: DatasetStats = ImagenetStats()
+        self.root: Final[pathlib.Path] = root / "imagenet-c"
+        self.corruption: str
+        self.level: Optional[int]
+
+    def prepare_data(self, *args, corruption: str, level: Optional[int] = None, **kwargs) -> None:
+        """check if ImageNet dataset exists (DO NOT assign train/val here).
+
+        Args:
+            corruption (str): The name of target corruption.
+            level (int, optional): The level of the corruption. If it is None, concatenate all levels.
+
+        """
+        # check the validity of corruption and level.
+        if corruption not in self.corruptions:
+            raise ValueError(f"corruption: {corruption} is not supported.")
+        if level not in self.levels:
+            raise ValueError(f"level: {level} is not supported.")
+
+        # check whether target dataset path is exists.
+        datasetpath: Final = self.root / corruption / level if level else self.root / corruption
+        if not datasetpath.exists():
+            raise ValueError(f"{datasetpath} dose not exist.")
+
+        # set corruption and level as attribute.
+        self.corruption = corruption
+        self.level = level
+
+    def setup(self, stage: Optional[str] = None) -> None:
+        """Setup dataset
+
+        If self.level is None, this method concat all levels dataset.
+
+        Args:
+            stage: When setup('test') is called, has_setup_test gets set to True.
+
+        """
+        # Try to remove already assigned dataset.
+        try:
+            del self.val_dataset
+        except AttributeError:
+            pass
+
+        # Prepare specific leval of corruption.
+        if self.level:
+            self.val_dataset: Dataset = torchvision.datasets.ImageFolder(
+                root=self.root / self.corruption / self.level,
+                transform=self._get_transform(train=False),
+            )
+            msg: Final = f"corruption: {self.corruption}, level: {self.corruption}."
+
+        # If self.level is None, prepare all levels as concatenated dataset.
+        else:
+            datasets: List[Dataset] = [torchvision.datasets.ImageFolder(root=self.root / self.corruption / str(level), transform=self._get_transform(train=False)) for level in self.levels]
+            self.val_dataset: Dataset = torch.utils.data.ConcatDataset(datasets)
+            msg: Final = f"corruption: {self.corruption}, level: ALL."
+
+        # logger message
+        logger.info(f"setup - {msg}")
+
+    @property
+    def corruptions(self) -> List[str]:
+        """Get list of all supported corruption."""
+        return [c.name for c in self.Corruptions]
+
+    @property
+    def levels(self) -> List[int]:
+        """Get list of all supported level."""
+        return [level for level in range(1, 6)]
