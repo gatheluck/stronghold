@@ -6,7 +6,7 @@ from .arch import (  # noqa
     Wideresnet40Config,
 )
 from .attacker import AttackerConfig, PgdConfig  # noqa
-from .dataset import Cifar10Config, DatasetConfig, ImagenetConfig  # noqa
+from .dataset import Cifar10Config, DatasetConfig, ImagenetConfig, ImagenetcConfig  # noqa
 from .env import EnvConfig, LocalConfig  # noqa
 from .optimizer import AdamConfig, OptimizerConfig, SgdConfig  # noqa
 from .scheduler import CosinConfig, MultistepConfig, SchedulerConfig  # noqa
