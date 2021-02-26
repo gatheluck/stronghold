@@ -274,7 +274,7 @@ class ImagenetcDataModule(BaseDataModule):
         fog = auto()
         frost = auto()
         gaussian_noise = auto()
-        gauss_blur = auto()
+        glass_blur = auto()
         impulse_noise = auto()
         jpeg_compression = auto()
         motion_blur = auto()
