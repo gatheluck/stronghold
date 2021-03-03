@@ -1,12 +1,11 @@
 import logging
 import pathlib
+from enum import IntEnum, auto
 from typing import Final, List, Mapping, Set, Tuple, Union
-from hydra.core.config_store import ConfigStore
 
 import pandas as pd
 import torch
-
-from enum import IntEnum, auto
+from hydra.core.config_store import ConfigStore
 
 import stronghold.src.schema as schema
 

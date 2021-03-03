@@ -1,18 +1,10 @@
 import logging
-import pathlib
 from collections import OrderedDict
-from dataclasses import dataclass
-from enum import IntEnum, auto
-from typing import Any, Dict, Final, Optional, Tuple, cast
-import numpy as np
+from typing import Any, Optional, Tuple
 
-import hydra
-import pytorch_lightning as pl
 import torch
 import torch.nn as nn
-from hydra.core.config_store import ConfigStore
 from hydra.utils import instantiate
-from omegaconf import MISSING, OmegaConf
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
@@ -26,7 +18,7 @@ def eval_error(
     arch: nn.Module,
     loader: DataLoader,
     device: torch.device,
-    attacker_config: Optional,
+    attacker_config: Optional[Any],
 ) -> Tuple[float, float]:
     """"""
     arch = arch.to(device)

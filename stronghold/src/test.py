@@ -154,7 +154,7 @@ def test(cfg: TestConfig) -> None:
 
     # run tests
     # evaluate standard / adversarial error.
-    if cfg.mode in {TestMode.STD, TestMode.Adv}:
+    if cfg.mode in {TestMode.STD, TestMode.ADV}:
         datamodule.prepare_data()
         datamodule.setup("test")
 

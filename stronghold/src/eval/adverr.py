@@ -1,26 +1,20 @@
 import logging
 import pathlib
 from dataclasses import dataclass
-from enum import IntEnum, auto
-from typing import Any, Dict, Final, Optional, Tuple, cast
-import numpy as np
+from typing import Final, Optional, cast
 
+import cleverhans  # noqa
 import hydra
-import pytorch_lightning as pl
+import numpy as np
 import torch
-import torch.nn as nn
 from hydra.core.config_store import ConfigStore
 from hydra.utils import instantiate
 from omegaconf import MISSING, OmegaConf
-from torch.utils.data import DataLoader
-from tqdm import tqdm
 
-import stronghold.src.eval
 import stronghold.src.common
-from stronghold.src.common import ConfigGroup
+import stronghold.src.eval
 import stronghold.src.schema as schema
-
-from cleverhans.torch.attacks.projected_gradient_descent import projected_gradient_descent
+from stronghold.src.common import ConfigGroup
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -35,7 +29,9 @@ class AttackerConfig:
 
 @dataclass
 class PgdConfig(AttackerConfig):
-    _target_: str = "projected_gradient_descent"
+    _target_: str = (
+        "cleverhans.torch.attacks.projected_gradient_descent.projected_gradient_descent"
+    )
     eps: float = 8.0
     eps_iter: Optional[float] = None
     nb_iter: int = 10
@@ -76,9 +72,11 @@ def main(cfg: AdverrConfig) -> None:
     # set additional configs
     # - attacker.norm
     # - attacker.eps_iter
-    cfg.attacker.norm = np.inf if cfg.attacker.norm == "linf" else float(cfg.attacker.norm)
-    if cfg.attacker.eps_iter is None:
-        cfg.attacker.eps_iter = cfg.attacker.eps / cfg.attacker.nb_iter
+    cfg.attacker.norm = (  # type: ignore
+        np.inf if cfg.attacker.norm == "linf" else float(cfg.attacker.norm)  # type: ignore
+    )
+    if cfg.attacker.eps_iter is None:  # type: ignore
+        cfg.attacker.eps_iter = cfg.attacker.eps / cfg.attacker.nb_iter  # type: ignore
 
     # Make config read only.
     # without this, config values might be changed accidentally.
@@ -114,7 +112,9 @@ def main(cfg: AdverrConfig) -> None:
     datamodule.setup("test")
 
     loader = datamodule.test_dataloader()
-    err1, err5 = stronghold.src.eval.eval_error(arch, loader, cast(torch.device, device), cfg.attacker)
+    err1, err5 = stronghold.src.eval.eval_error(
+        arch, loader, cast(torch.device, device), cfg.attacker
+    )
     custom_logger.log(dict(adverr1=err1, adverr5=err5))
 
 
