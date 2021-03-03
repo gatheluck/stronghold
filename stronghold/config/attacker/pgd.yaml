@@ -1,8 +1,4 @@
 # @package _group_
-avoid_target: True
-eps_max: 8.0
+eps: 8.0
+nb_iter: 10
 norm: linf
-num_iteration: 10
-rand_init: True
-scale_each: True
-scale_eps: True
