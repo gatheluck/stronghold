@@ -1,9 +1,14 @@
 import logging
 import pathlib
-from typing import Final, List, Mapping, Tuple, Union
+from typing import Final, List, Mapping, Set, Tuple, Union
+from hydra.core.config_store import ConfigStore
 
 import pandas as pd
 import torch
+
+from enum import IntEnum, auto
+
+import stronghold.src.schema as schema
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -64,3 +69,46 @@ class Logger:
             self.df.to_csv(self.savepath)
         except ValueError:
             logger.error("self.savepath is not valid path.")
+
+
+class ConfigGroup(IntEnum):
+    ARCH = auto()
+    ATTACKER = auto()
+    DATASET = auto()
+    ENV = auto()
+    OPTIMIZER = auto()
+    SCHEDULER = auto()
+
+
+def set_config_groups(cs: ConfigStore, groups: Set[ConfigGroup]) -> None:
+    """setup config groups in groups
+
+    Args:
+        cs (ConfigStore): The config store.
+        groups (Set[ConfigGroup]): The set of config groups.
+
+    """
+    for group in groups:
+        if group == ConfigGroup.ARCH:
+            logger.info("set_config_groups - set group: arch.")
+            cs.store(group="arch", name="resnet50", node=schema.Resnet50Config)
+            cs.store(group="arch", name="resnet56", node=schema.Resnet56Config)
+            cs.store(group="arch", name="wideresnet40", node=schema.Wideresnet40Config)
+            cs.store(group="arch", name="vit16", node=schema.Vit16Config)
+        elif group == ConfigGroup.DATASET:
+            logger.info("set_config_groups - set group: dataset.")
+            cs.store(group="dataset", name="cifar10", node=schema.Cifar10Config)
+            cs.store(group="dataset", name="imagenet", node=schema.ImagenetConfig)
+        elif group == ConfigGroup.ENV:
+            logger.info("set_config_groups - set group: env.")
+            cs.store(group="env", name="local", node=schema.LocalConfig)
+        elif group == ConfigGroup.OPTIMIZER:
+            logger.info("set_config_groups - set group: optimizer.")
+            cs.store(group="optimizer", name="sgd", node=schema.SgdConfig)
+            cs.store(group="optimizer", name="adam", node=schema.AdamConfig)
+        elif group == ConfigGroup.SCHEDULER:
+            logger.info("set_config_groups - set group: scheduler.")
+            cs.store(group="scheduler", name="cosin", node=schema.CosinConfig)
+            cs.store(group="scheduler", name="multistep", node=schema.MultistepConfig)
+        else:
+            raise ValueError(f"set_config_groups - group: {group} is not supportted.")
