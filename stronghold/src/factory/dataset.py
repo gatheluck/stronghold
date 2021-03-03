@@ -181,6 +181,10 @@ class BaseDataModule(pl.LightningDataModule):
             train=train,
         )
 
+    @property
+    def num_classes(self) -> int:
+        return self.dataset_stats.num_classes
+
 
 class Cifar10DataModule(BaseDataModule):
     """The LightningDataModule for CIFAR-10 dataset.
