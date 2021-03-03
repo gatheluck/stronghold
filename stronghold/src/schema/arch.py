@@ -5,7 +5,7 @@ from omegaconf import MISSING
 
 @dataclass
 class ArchConfig:
-    num_classes: int = MISSING
+    pass
 
 
 # configs for resnet architecures
