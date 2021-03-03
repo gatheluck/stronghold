@@ -22,24 +22,27 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-def eval_standard_error(
-    arch: nn.Module, loader: DataLoader, device: torch.device
+def eval_error(
+    arch: nn.Module,
+    loader: DataLoader,
+    device: torch.device,
 ) -> Tuple[float, float]:
     """"""
     arch = arch.to(device)
     err1_list, err5_list = list(), list()
-    with torch.no_grad():
-        with tqdm(loader, ncols=80) as pbar:
-            for x, t in pbar:
-                x, t = x.to(device), t.to(device)
-                output = arch(x)
-                err1, err5 = stronghold.src.common.calc_errors(output, t, topk=(1, 5))
-                err1_list.append(err1.item())
-                err5_list.append(err5.item())
 
-                pbar.set_postfix(OrderedDict(stderr1=err1.item(), stderr5=err5.item()))
-                pbar.update()
-                # logging.info(f"stderr1: {err1.item()}, stderr5: {err5.item()}")
+    with tqdm(loader, ncols=80) as pbar:
+        for x, t in pbar:
+            x, t = x.to(device), t.to(device)
+
+            output = arch(x)
+            err1, err5 = stronghold.src.common.calc_errors(output, t, topk=(1, 5))
+            err1_list.append(err1.item())
+            err5_list.append(err5.item())
+
+            pbar.set_postfix(OrderedDict(stderr1=err1.item(), stderr5=err5.item()))
+            pbar.update()
+            # logging.info(f"stderr1: {err1.item()}, stderr5: {err5.item()}")
 
     mean_err1 = sum(err1_list) / len(err1_list)
     mean_err5 = sum(err5_list) / len(err5_list)
@@ -68,7 +71,7 @@ def eval_corruption_error(
             loader = datamodule.test_dataloader()
 
             # calculate errors for the corruptions
-            err1, err5 = eval_standard_error(
+            err1, err5 = eval_error(
                 arch, cast(DataLoader, loader), device
             )  # return is Tuple[float, float]
             results = OrderedDict()
@@ -106,8 +109,6 @@ class TestConfig:
 
 cs = ConfigStore.instance()
 cs.store(name="test", node=TestConfig)
-# attacker
-cs.store(group="attacker", name="pgd", node=schema.PgdConfig)
 # arch
 cs.store(group="arch", name="resnet50", node=schema.Resnet50Config)
 cs.store(group="arch", name="resnet56", node=schema.Resnet56Config)
@@ -152,14 +153,17 @@ def test(cfg: TestConfig) -> None:
     datamodule = instantiate(cfg.dataset, cfg.batch_size, cfg.env.num_workers, root)
 
     # run tests
-    # evaluate standard error.
-    if cfg.mode == TestMode.STD:
+    # evaluate standard / adversarial error.
+    if cfg.mode in {TestMode.STD, TestMode.Adv}:
         datamodule.prepare_data()
         datamodule.setup("test")
 
         loader = datamodule.test_dataloader()
-        err1, err5 = eval_standard_error(arch, loader, cast(torch.device, device))
-        custom_logger.log(dict(stderr1=err1, srderr5=err5))
+        err1, err5 = eval_error(arch, loader, cast(torch.device, device))
+        if cfg.mode == TestMode.STD:
+            custom_logger.log(dict(stderr1=err1, srderr5=err5))
+        elif cfg.mode == TestMode.ADV:
+            custom_logger.log(dict(adverr1=err1, adverr5=err5))
 
     # evaluate corruption error.
     elif cfg.mode == TestMode.CORRUPTION:
